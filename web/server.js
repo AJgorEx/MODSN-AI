@@ -112,7 +112,19 @@ module.exports = function startWebServer(client) {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: params
       });
-      const token = await tokenRes.json();
+
+      let token;
+      try {
+        const ct = tokenRes.headers.get('content-type') || '';
+        if (!ct.includes('application/json')) {
+          const text = await tokenRes.text();
+          throw new Error(`Invalid response: ${text}`);
+        }
+        token = await tokenRes.json();
+      } catch (err) {
+        console.error('Failed to fetch token', err);
+        return res.status(500).send('OAuth failed');
+      }
       if (!token.access_token) return res.status(401).send('Auth failed');
       req.session.accessToken = token.access_token;
       const userRes = await fetch('https://discord.com/api/users/@me', {
