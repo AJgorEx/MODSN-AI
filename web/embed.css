@@ -33,6 +33,17 @@
   display: none;
   z-index: 10;
 }
+#customEmojis {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+}
+#customEmojis img {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
 .embed-preview {
   margin-top: 1rem;
   border-left: 3px solid var(--primary);

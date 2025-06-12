@@ -24,6 +24,7 @@
       const embedForm = document.getElementById('embedForm');
       const emojiInput = document.getElementById('emojiInput');
       const emojiPicker = document.getElementById('emojiPicker');
+      const customEmojis = document.getElementById('customEmojis');
       const embedPreview = document.getElementById('embedPreview');
       const embedTitle = document.getElementById('embedTitle');
       const embedDescription = document.getElementById('embedDescription');
@@ -68,9 +69,27 @@
           });
       };
 
+      const loadEmojis = async (id) => {
+        if (!customEmojis) return;
+        customEmojis.innerHTML = '';
+        const emojis = await fetchJSON(`/emojis/${id}`);
+        if (emojis)
+          emojis.forEach(e => {
+            const img = document.createElement('img');
+            img.src = e.url;
+            img.alt = e.name;
+            img.addEventListener('click', () => {
+              emojiInput.value = `<${e.animated ? 'a' : ''}:${e.name}:${e.id}>`;
+              updatePreview();
+            });
+            customEmojis.appendChild(img);
+          });
+      };
+
       if (guildId) {
         guildGroup.style.display = 'none';
         await loadChannels(guildId);
+        await loadEmojis(guildId);
       } else {
         const guilds = await fetchJSON('/guilds');
         if (guilds)
@@ -80,7 +99,10 @@
             opt.textContent = g.name;
             guildSelect.appendChild(opt);
           });
-        guildSelect.addEventListener('change', () => loadChannels(guildSelect.value));
+        guildSelect.addEventListener('change', () => {
+          loadChannels(guildSelect.value);
+          loadEmojis(guildSelect.value);
+        });
         guildSelect.dispatchEvent(new Event('change'));
       }
 
@@ -126,7 +148,11 @@
           .replace(/__(.*?)__/g, '<u>$1</u>')
           .replace(/~~(.*?)~~/g, '<s>$1</s>')
           .replace(/```([\s\S]+?)```/g, '<pre>$1</pre>')
-          .replace(/`([^`]+)`/g, '<code>$1</code>');
+          .replace(/`([^`]+)`/g, '<code>$1</code>')
+          .replace(/<(a?):(\w+):(\d+)>/g, (_, a, name, id) => {
+            const ext = a ? 'gif' : 'png';
+            return `<img src="https://cdn.discordapp.com/emojis/${id}.${ext}" alt="${name}" style="width:1em;height:1em;vertical-align:-0.1em;">`;
+          });
       }
 
       function buildPreviewEmbed() {
@@ -372,6 +398,7 @@
           <div class="emoji-picker-wrapper">
             <input type="text" id="emojiInput" readonly placeholder="Click to pick">
             <emoji-picker id="emojiPicker"></emoji-picker>
+            <div id="customEmojis"></div>
           </div>
         </div>
         <div id="embedPreview" class="embed-preview"></div>
