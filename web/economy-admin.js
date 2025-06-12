@@ -7,12 +7,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
   const memberSelect = document.getElementById('member');
-  const roleSelect = document.getElementById('role');
+  const walletInput = document.getElementById('wallet');
+  const bankInput = document.getElementById('bank');
+  const amountInput = document.getElementById('amount');
   const header = document.getElementById('server-name');
   try {
     const guilds = await fetchJSON('/guilds');
     const guild = guilds.find(g => g.id === guildId);
-    if (guild && header) header.textContent = `Role Manager - ${guild.name}`;
+    if (guild && header) header.textContent = `Economy Manager - ${guild.name}`;
   } catch (_) {}
   const members = await fetchJSON(`/members/${guildId}`);
   if (members)
@@ -22,28 +24,31 @@ document.addEventListener('DOMContentLoaded', async () => {
       opt.textContent = m.username;
       memberSelect.appendChild(opt);
     });
-  const roles = await fetchJSON(`/roles/${guildId}`);
-  if (roles)
-    roles.forEach(r => {
-      const opt = document.createElement('option');
-      opt.value = r.id;
-      opt.textContent = r.name;
-      roleSelect.appendChild(opt);
-    });
-  document.querySelectorAll('#roleForm button').forEach(btn => {
+  async function loadEconomy() {
+    const id = memberSelect.value;
+    if (!id) return;
+    try {
+      const data = await fetchJSON(`/economy/user/${guildId}/${id}`);
+      walletInput.value = data.balance;
+      bankInput.value = data.bank;
+    } catch (err) {
+      notify('error', err.message);
+    }
+  }
+  memberSelect.addEventListener('change', loadEconomy);
+  await loadEconomy();
+  document.querySelectorAll('#economyForm button').forEach(btn => {
     btn.addEventListener('click', async () => {
-      const body = {
-        memberId: memberSelect.value,
-        roleId: roleSelect.value,
-        action: btn.dataset.action
-      };
+      const body = { action: btn.dataset.action, amount: parseInt(amountInput.value, 10) };
       try {
-        await fetchJSON(`/member-role/${guildId}`, {
+        const data = await fetchJSON(`/economy/user/${guildId}/${memberSelect.value}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(body)
         });
-        notify('success', 'Done');
+        walletInput.value = data.balance;
+        bankInput.value = data.bank;
+        notify('success', 'Updated');
       } catch (err) {
         notify('error', err.message);
       }

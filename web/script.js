@@ -32,3 +32,18 @@ async function loadUserInfo() {
 document.addEventListener('DOMContentLoaded', () => {
   // no animations
 });
+
+function notify(type, msg) {
+  const container = document.getElementById('notifications');
+  if (!container) return;
+  const div = document.createElement('div');
+  div.className = `toast ${type}`;
+  const icons = { success: '✔️', error: '❌', info: 'ℹ️' };
+  div.innerHTML = `<span class="icon">${icons[type] || ''}</span> ${msg}`;
+  container.appendChild(div);
+  requestAnimationFrame(() => div.classList.add('show'));
+  setTimeout(() => {
+    div.classList.remove('show');
+    div.addEventListener('transitionend', () => div.remove());
+  }, 3000);
+}

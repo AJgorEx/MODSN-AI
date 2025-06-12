@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Manage member roles">
-  <title>Role Manager</title>
+  <meta name="description" content="Manage user economy">
+  <title>Economy Manager</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Roboto+Slab:wght@600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -27,19 +27,32 @@
   </div>
   <main class="main">
     <div class="card tilt">
-      <h1 id="server-name">Role Manager</h1>
-      <form id="roleForm">
+      <h1 id="server-name">Economy Manager</h1>
+      <form id="economyForm">
         <div class="form-group">
           <label>Member</label>
           <select id="member"></select>
         </div>
         <div class="form-group">
-          <label>Role</label>
-          <select id="role"></select>
+          <label>Wallet</label>
+          <input type="number" id="wallet" readonly>
         </div>
         <div class="form-group">
-          <button class="btn" data-action="add" type="button">Add Role</button>
-          <button class="btn" data-action="remove" type="button">Remove Role</button>
+          <label>Bank</label>
+          <input type="number" id="bank" readonly>
+        </div>
+        <div class="form-group">
+          <label>Amount</label>
+          <input type="number" id="amount" value="0" min="1">
+        </div>
+        <div class="form-group">
+          <button class="btn btn-sm" data-action="addWallet" type="button">Add Wallet</button>
+          <button class="btn btn-sm" data-action="addBank" type="button">Add Bank</button>
+          <button class="btn btn-sm" data-action="setWallet" type="button">Set Wallet</button>
+          <button class="btn btn-sm" data-action="setBank" type="button">Set Bank</button>
+        </div>
+        <div class="form-group">
+          <button class="btn btn-sm" data-action="resetCooldowns" type="button">Reset Cooldowns</button>
         </div>
       </form>
     </div>
@@ -47,6 +60,6 @@
   <div id="notifications" class="notifications"></div>
   <footer class="footer">Panel MODSN.AI &copy; 2025</footer>
   <script src="script.js"></script>
-  <script src="role-manager.js"></script>
+  <script src="economy-admin.js"></script>
 </body>
 </html>

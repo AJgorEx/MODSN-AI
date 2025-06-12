@@ -1018,6 +1018,23 @@ EconomySystem.prototype.setBank = function (id, amount) {
   this.save();
 };
 
+EconomySystem.prototype.addBank = function (id, amount) {
+  if (amount <= 0) throw new Error('Amount must be positive');
+  const user = this.getUser(id);
+  user.bank += amount;
+  user.transactions.push({ type: 'admin-bank', amount, ts: Date.now() });
+  this.save();
+};
+
+EconomySystem.prototype.subtractBank = function (id, amount) {
+  if (amount <= 0) throw new Error('Amount must be positive');
+  const user = this.getUser(id);
+  if (user.bank < amount) throw new Error('Insufficient bank funds');
+  user.bank -= amount;
+  user.transactions.push({ type: 'admin-bank', amount: -amount, ts: Date.now() });
+  this.save();
+};
+
 EconomySystem.prototype.resetCooldowns = function (id) {
   const user = this.getUser(id);
   user.lastDaily = 0;
