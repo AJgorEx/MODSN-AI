@@ -9,9 +9,14 @@ const startWebServer = require('./web/server');
 const configPath = path.join(__dirname, 'commands-config.json');
 let commandStatus = {};
 try {
-  commandStatus = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+  const data = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+  if (data.default && data.guilds) {
+    commandStatus = data;
+  } else {
+    commandStatus = { default: data, guilds: {} };
+  }
 } catch (_) {
-  commandStatus = {};
+  commandStatus = { default: {}, guilds: {} };
 }
 
 const client = new Client({
@@ -23,6 +28,11 @@ client.commands = new Collection();
 client.commandStatus = commandStatus;
 client.saveCommandStatus = function () {
   fs.writeFileSync(configPath, JSON.stringify(client.commandStatus, null, 2));
+};
+client.isCommandEnabled = function (guildId, command) {
+  const guildCfg = client.commandStatus.guilds[guildId] || {};
+  if (typeof guildCfg[command] !== 'undefined') return guildCfg[command];
+  return client.commandStatus.default[command] !== false;
 };
 
 const commandsPath = path.join(__dirname, 'commands');
@@ -43,8 +53,8 @@ client.on('interactionCreate', async interaction => {
   if (!interaction.isChatInputCommand()) return;
   const command = client.commands.get(interaction.commandName);
   if (!command) return;
-  if (client.commandStatus[interaction.commandName] === false) {
-    return interaction.reply({ content: 'Ta komenda jest wyłączona.', ephemeral: true });
+  if (!client.isCommandEnabled(interaction.guildId, interaction.commandName)) {
+    return interaction.reply({ content: 'Ta komenda jest wyłączona na tym serwerze.', ephemeral: true });
   }
   try {
     await command.execute(interaction);
