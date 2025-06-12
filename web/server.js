@@ -155,16 +155,23 @@ module.exports = function startWebServer(client) {
     res.json({ botGuilds: client.guilds.cache.size });
   });
 
-  app.get('/command-status', requireAuth, (req, res) => {
-    res.json(client.commandStatus);
+  app.get('/command-status/:guildId', requireAuth, (req, res) => {
+    const guildId = req.params.guildId;
+    const result = {};
+    client.commands.forEach((_, name) => {
+      result[name] = client.isCommandEnabled(guildId, name);
+    });
+    res.json(result);
   });
 
-  app.post('/command-status', requireAuth, (req, res) => {
+  app.post('/command-status/:guildId', requireAuth, (req, res) => {
+    const guildId = req.params.guildId;
     const { command, enabled } = req.body;
-    if (typeof client.commandStatus[command] === 'undefined') {
+    if (!client.commands.has(command)) {
       return res.status(400).send('Invalid command');
     }
-    client.commandStatus[command] = !!enabled;
+    if (!client.commandStatus.guilds[guildId]) client.commandStatus.guilds[guildId] = {};
+    client.commandStatus.guilds[guildId][command] = !!enabled;
     client.saveCommandStatus();
     res.send('OK');
   });
