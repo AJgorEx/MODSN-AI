@@ -1164,6 +1164,17 @@ EconomySystem.prototype.withdrawAll = function (id) {
   this.withdraw(id, user.bank);
 };
 
+EconomySystem.prototype.gamble = function (id, amount) {
+  this.subtractBalance(id, amount, 'gamble-bet');
+  const win = Math.random() < 0.5;
+  if (win) {
+    const reward = amount * 2;
+    this.addBalance(id, reward, 'gamble-win');
+    return reward;
+  }
+  return 0;
+};
+
 EconomySystem.prototype.inventoryValue = function (id) {
   const user = this.getUser(id);
   return user.inventory

@@ -49,6 +49,29 @@ document.addEventListener('DOMContentLoaded', async () => {
       alert(text);
     }
   });
+
+  document.getElementById('gambleBtn')?.addEventListener('click', async () => {
+    const amt = parseInt(amountInput.value, 10);
+    if (amt > 0) {
+      const res = await fetch('/economy/gamble', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: amt })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.reward > 0) {
+          alert('You won!');
+        } else {
+          alert('You lost.');
+        }
+        await refreshEconomy();
+      } else {
+        const text = await res.text();
+        alert(text);
+      }
+    }
+  });
 });
 
 async function refreshEconomy() {
