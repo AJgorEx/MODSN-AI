@@ -174,6 +174,17 @@ module.exports = function startWebServer(client) {
     }
   }
 
+  async function getUserId(req) {
+    if (!req.session.user) {
+      const userRes = await fetch('https://discord.com/api/users/@me', {
+        headers: { Authorization: `Bearer ${req.session.accessToken}` }
+      });
+      if (!userRes.ok) throw new Error('Failed to fetch user');
+      req.session.user = await userRes.json();
+    }
+    return req.session.user.id;
+  }
+
   app.get('/me', requireAuth, async (req, res) => {
     try {
       if (!req.session.user) {
@@ -353,6 +364,67 @@ module.exports = function startWebServer(client) {
     } catch (err) {
       console.error(err);
       res.status(500).send('Failed to fetch members');
+    }
+  });
+
+  app.get('/economy', requireAuth, async (req, res) => {
+    try {
+      const id = await getUserId(req);
+      const user = client.economy.getUser(id);
+      res.json({ balance: user.balance, bank: user.bank });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Failed to fetch economy');
+    }
+  });
+
+  app.post('/economy/deposit', requireAuth, async (req, res) => {
+    try {
+      const id = await getUserId(req);
+      const amt = parseInt(req.body.amount, 10);
+      client.economy.deposit(id, amt);
+      const user = client.economy.getUser(id);
+      res.json({ balance: user.balance, bank: user.bank });
+    } catch (err) {
+      console.error(err);
+      res.status(400).send(err.message);
+    }
+  });
+
+  app.post('/economy/withdraw', requireAuth, async (req, res) => {
+    try {
+      const id = await getUserId(req);
+      const amt = parseInt(req.body.amount, 10);
+      client.economy.withdraw(id, amt);
+      const user = client.economy.getUser(id);
+      res.json({ balance: user.balance, bank: user.bank });
+    } catch (err) {
+      console.error(err);
+      res.status(400).send(err.message);
+    }
+  });
+
+  app.post('/economy/daily', requireAuth, async (req, res) => {
+    try {
+      const id = await getUserId(req);
+      client.economy.daily(id);
+      const user = client.economy.getUser(id);
+      res.json({ balance: user.balance, bank: user.bank });
+    } catch (err) {
+      console.error(err);
+      res.status(400).send(err.message);
+    }
+  });
+
+  app.post('/economy/work', requireAuth, async (req, res) => {
+    try {
+      const id = await getUserId(req);
+      const reward = client.economy.work(id);
+      const user = client.economy.getUser(id);
+      res.json({ balance: user.balance, bank: user.bank, reward });
+    } catch (err) {
+      console.error(err);
+      res.status(400).send(err.message);
     }
   });
 
