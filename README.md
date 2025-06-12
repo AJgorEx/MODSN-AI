@@ -8,7 +8,11 @@ Panel do zarządzania serwerami Discord.
    ```bash
    npm install
    ```
-2. Utwórz plik `.env` i ustaw wymagane zmienne środowiskowe:
+2. Skopiuj plik `.env.example` do `.env` i uzupełnij wartości:
+   ```bash
+   cp .env.example .env
+   ```
+   W pliku znajdują się zmienne środowiskowe:
    ```env
    DISCORD_TOKEN=<token bota>
    CLIENT_ID=<id aplikacji>
