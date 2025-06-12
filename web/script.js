@@ -43,6 +43,39 @@ function toggleTheme() {
   localStorage.setItem('theme', newTheme);
 }
 
+function applyScale(scale) {
+  document.documentElement.style.setProperty('--ui-scale', scale + '%');
+}
+
+function loadPreferences() {
+  const prefs = JSON.parse(localStorage.getItem('userPrefs') || '{}');
+  const notif = document.getElementById('notifToggle');
+  if (notif) notif.checked = prefs.notifications !== false;
+  const lang = document.getElementById('langSelect');
+  if (lang) lang.value = prefs.lang || 'en';
+  const status = document.getElementById('statusToggle');
+  if (status) status.checked = prefs.showStatus !== false;
+  const adv = document.getElementById('advancedToggle');
+  if (adv) adv.checked = !!prefs.advanced;
+  const scaleInput = document.getElementById('scaleRange');
+  const scale = prefs.scale || 100;
+  if (scaleInput) scaleInput.value = scale;
+  applyScale(scale);
+}
+
+function savePreferences() {
+  const prefs = {
+    notifications: document.getElementById('notifToggle')?.checked,
+    lang: document.getElementById('langSelect')?.value,
+    showStatus: document.getElementById('statusToggle')?.checked,
+    advanced: document.getElementById('advancedToggle')?.checked,
+    scale: parseInt(document.getElementById('scaleRange')?.value, 10) || 100
+  };
+  localStorage.setItem('userPrefs', JSON.stringify(prefs));
+  applyScale(prefs.scale);
+  notify('success', 'Settings saved');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const saved = localStorage.getItem('theme');
   if (saved) applyTheme(saved);
@@ -55,6 +88,9 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', toggleTheme);
     nav.appendChild(btn);
   }
+  loadPreferences();
+  document.getElementById('saveSettingsBtn')?.addEventListener('click', savePreferences);
+  document.getElementById('scaleRange')?.addEventListener('input', e => applyScale(e.target.value));
 });
 
 function notify(type, msg) {
