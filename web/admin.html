@@ -43,6 +43,9 @@
       const welcomeChannelSelect = document.getElementById('welcomeChannel');
       const welcomeMessageInput = document.getElementById('welcomeMessage');
       const saveWelcome = document.getElementById('saveWelcome');
+      const logChannelSelect = document.getElementById('logChannel');
+      const autoRoleSelect = document.getElementById('autoRole');
+      const saveAdvanced = document.getElementById('saveAdvanced');
       const params = new URLSearchParams(window.location.search);
       const guildId = params.get('guildId');
       const commandsLink = document.getElementById('commandsLink');
@@ -91,7 +94,11 @@
       if (guildId && defaultColor) {
         try {
           const settings = await fetchJSON(`/settings/${guildId}`);
-          if (settings && settings.color) defaultColor.value = settings.color;
+          if (settings) {
+            if (settings.color) defaultColor.value = settings.color;
+            if (logChannelSelect && settings.logChannel) logChannelSelect.value = settings.logChannel;
+            if (autoRoleSelect && settings.autoRole) autoRoleSelect.value = settings.autoRole;
+          }
         } catch (_) {}
         try {
           const w = await fetchJSON(`/welcome-settings/${guildId}`);
@@ -133,6 +140,24 @@
             }
           });
         }
+        if (saveAdvanced) {
+          saveAdvanced.addEventListener('click', async () => {
+            try {
+              const res = await fetch(`/settings/${guildId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  logChannel: logChannelSelect.value,
+                  autoRole: autoRoleSelect.value
+                })
+              });
+              const text = await res.text();
+              if (res.ok) notify('success', text); else notify('error', text);
+            } catch (err) {
+              notify('error', err.message);
+            }
+          });
+        }
       } else if (defaultColor && saveSettings) {
         defaultColor.disabled = true;
         saveSettings.disabled = true;
@@ -145,6 +170,7 @@
         channelSelect.innerHTML = '';
         if (embedChannelSelect) embedChannelSelect.innerHTML = '';
         if (welcomeChannelSelect) welcomeChannelSelect.innerHTML = '';
+        if (logChannelSelect) logChannelSelect.innerHTML = '<option value="">None</option>';
         const channels = await fetchJSON(`/channels/${id}`);
         if (channels)
           channels.forEach(c => {
@@ -163,6 +189,12 @@
               opt3.value = c.id;
               opt3.textContent = c.name;
               welcomeChannelSelect.appendChild(opt3);
+            }
+            if (logChannelSelect) {
+              const opt4 = document.createElement('option');
+              opt4.value = c.id;
+              opt4.textContent = c.name;
+              logChannelSelect.appendChild(opt4);
             }
           });
       };
@@ -184,10 +216,24 @@
           });
       };
 
+      const loadRoles = async (id) => {
+        if (!autoRoleSelect) return;
+        autoRoleSelect.innerHTML = '<option value="">None</option>';
+        const roles = await fetchJSON(`/roles/${id}`);
+        if (roles)
+          roles.forEach(r => {
+            const opt = document.createElement('option');
+            opt.value = r.id;
+            opt.textContent = r.name;
+            autoRoleSelect.appendChild(opt);
+          });
+      };
+
       if (guildId) {
         guildGroup.style.display = 'none';
         await loadChannels(guildId);
         await loadEmojis(guildId);
+        await loadRoles(guildId);
       } else {
         const guilds = await fetchJSON('/guilds');
         if (guilds)
@@ -200,6 +246,7 @@
         guildSelect.addEventListener('change', () => {
           loadChannels(guildSelect.value);
           loadEmojis(guildSelect.value);
+          loadRoles(guildSelect.value);
         });
         guildSelect.dispatchEvent(new Event('change'));
       }
@@ -536,6 +583,18 @@
         <small>Use {user} to mention the new member</small>
       </div>
       <button id="saveWelcome" class="btn" style="margin-top:1rem;">Save Welcome</button>
+    </div>
+    <div class="card tilt" style="margin-top:2rem;">
+      <h2>Advanced Settings</h2>
+      <div class="form-group">
+        <label>Log Channel</label>
+        <select id="logChannel"></select>
+      </div>
+      <div class="form-group">
+        <label>Auto Role</label>
+        <select id="autoRole"></select>
+      </div>
+      <button id="saveAdvanced" class="btn" style="margin-top:1rem;">Save Advanced</button>
     </div>
   </main>
   <div id="notifications" class="notifications"></div>
