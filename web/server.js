@@ -41,7 +41,7 @@ module.exports = function startWebServer(client) {
     const params = new URLSearchParams({
       client_id: CLIENT_ID,
       permissions: '8',
-      scope: 'bot'
+      scope: 'identify guilds bot'
     });
     res.redirect(`https://discord.com/oauth2/authorize?${params.toString()}`);
   });
