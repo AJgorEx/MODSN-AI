@@ -1,0 +1,10 @@
+{
+  "8ball": true,
+  "ban": true,
+  "help": true,
+  "kick": true,
+  "ping": true,
+  "poll": true,
+  "siema": true,
+  "userinfo": true
+}
