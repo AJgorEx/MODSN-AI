@@ -4,6 +4,8 @@ const session = require('express-session');
 const path = require('path');
 const crypto = require('crypto');
 const helmet = require('helmet');
+// `fetch` is available globally in recent Node versions
+// no additional import is required
 
 module.exports = function startWebServer(client) {
   const app = express();
@@ -15,18 +17,31 @@ module.exports = function startWebServer(client) {
 
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json());
+
+  // Cookie parser MUST come before the session middleware
   app.use(cookieParser());
   app.use(helmet());
-  app.use(session({
-    secret: process.env.SESSION_SECRET || 'super-secret',
-    resave: false,
-    saveUninitialized: false
-  }));
+
+  app.use(
+    session({
+      secret: process.env.SESSION_SECRET || 'super-secret',
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        sameSite: 'lax'
+      }
+    })
+  );
   app.use(express.static(path.join(__dirname)));
 
   app.get('/login', (req, res) => {
     const state = crypto.randomBytes(16).toString('hex');
     req.session.oauthState = state;
+    // Debug information to help verify session state persistence
+    console.log('[LOGIN]', {
+      sessionId: req.session.id,
+      oauthState: req.session.oauthState
+    });
     const params = new URLSearchParams({
       client_id: CLIENT_ID,
       redirect_uri: REDIRECT_URI,
@@ -39,6 +54,11 @@ module.exports = function startWebServer(client) {
 
   app.get('/callback', async (req, res) => {
     const { code, state } = req.query;
+    console.log('[CALLBACK]', {
+      sessionId: req.session.id,
+      savedState: req.session.oauthState,
+      returnedState: state
+    });
     if (!code || state !== req.session.oauthState) {
       return res.status(400).send('Invalid state');
     }
