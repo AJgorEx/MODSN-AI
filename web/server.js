@@ -340,6 +340,26 @@ module.exports = function startWebServer(client) {
     }
   });
 
+  app.get('/server-info/:guildId', requireAuth, verifyGuildAccess, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.guildId);
+    if (!guild) return res.status(404).send('Guild not found');
+    try {
+      await guild.fetch();
+      res.json({
+        id: guild.id,
+        name: guild.name,
+        memberCount: guild.memberCount,
+        ownerId: guild.ownerId,
+        createdAt: guild.createdAt,
+        icon: guild.iconURL({ size: 128 }) || null,
+        description: guild.description || ''
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Failed to fetch server info');
+    }
+  });
+
   app.post('/message', requireAuth, async (req, res) => {
     const { channelId, message } = req.body;
     const channel = client.channels.cache.get(channelId);

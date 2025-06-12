@@ -38,6 +38,10 @@ W panelu administracyjnym znajdziesz sekcję **Rich Embed**, która pozwala zbud
 
 Now the panel includes a **Roles** page where you can view server roles. Access it from the admin page once a guild is selected.
 
+## Server info
+
+From the admin page you can open **Server Info** to view details about the selected guild. The page shows member count, owner ID, creation date and server icon.
+
 ## Economy commands
 
 Bot includes an in-chat economy. Use `/daily` and `/work` to earn coins, `/deposit` and `/withdraw` to manage your bank balance and `/gamble` to risk your coins for a chance to double them.
