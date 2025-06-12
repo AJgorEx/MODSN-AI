@@ -1,5 +1,9 @@
 async function fetchJSON(url, opts = {}) {
   const res = await fetch(url, { credentials: 'include', ...opts });
+  if (res.status === 401) {
+    window.location.replace('/login');
+    throw new Error('Unauthorized');
+  }
   if (!res.ok) throw new Error(res.status);
   return res.json();
 }
