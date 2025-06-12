@@ -1,9 +1,17 @@
+const { SlashCommandBuilder } = require('discord.js');
+
 module.exports = {
-  name: 'userinfo',
-  description: 'Wyświetla informacje o użytkowniku',
-  execute(message) {
-    const user = message.author;
-    const member = message.guild.members.cache.get(user.id);
+  data: new SlashCommandBuilder()
+    .setName('userinfo')
+    .setDescription('Wyświetla informacje o użytkowniku')
+    .addUserOption(option =>
+      option.setName('uzytkownik')
+        .setDescription('Użytkownik, o którym chcesz uzyskać informacje')
+        .setRequired(false)
+    ),
+  async execute(interaction) {
+    const user = interaction.options.getUser('uzytkownik') || interaction.user;
+    const member = interaction.guild.members.cache.get(user.id);
     const embed = {
       color: 0x0099ff,
       title: user.tag,
@@ -13,6 +21,6 @@ module.exports = {
         { name: 'Utworzone konto', value: user.createdAt.toDateString(), inline: true }
       ]
     };
-    message.channel.send({ embeds: [embed] });
+    await interaction.reply({ embeds: [embed] });
   }
 };

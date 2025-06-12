@@ -1,22 +1,28 @@
-const { PermissionsBitField } = require('discord.js');
+const { SlashCommandBuilder, PermissionsBitField } = require('discord.js');
 
 module.exports = {
-  name: 'ban',
-  description: 'Banuje wskazanego użytkownika',
-  async execute(message) {
-    if (!message.member.permissions.has(PermissionsBitField.Flags.BanMembers)) {
-      return message.reply('Nie masz uprawnień do banowania użytkowników.');
+  data: new SlashCommandBuilder()
+    .setName('ban')
+    .setDescription('Banuje wskazanego użytkownika')
+    .addUserOption(option =>
+      option.setName('uzytkownik')
+        .setDescription('Użytkownik do zbanowania')
+        .setRequired(true)
+    ),
+  async execute(interaction) {
+    if (!interaction.member.permissions.has(PermissionsBitField.Flags.BanMembers)) {
+      return interaction.reply({ content: 'Nie masz uprawnień do banowania użytkowników.', ephemeral: true });
     }
-    const member = message.mentions.members.first();
+    const member = interaction.options.getMember('uzytkownik');
     if (!member) {
-      return message.reply('Oznacz użytkownika do zbanowania.');
+      return interaction.reply({ content: 'Nie mogę znaleźć użytkownika.', ephemeral: true });
     }
     try {
       await member.ban();
-      message.channel.send(`Użytkownik ${member.user.tag} został zbanowany.`);
+      await interaction.reply(`Użytkownik ${member.user.tag} został zbanowany.`);
     } catch (err) {
       console.error(err);
-      message.reply('Nie udało się zbanować użytkownika.');
+      interaction.reply({ content: 'Nie udało się zbanować użytkownika.', ephemeral: true });
     }
   }
 };

@@ -1,10 +1,15 @@
+const { SlashCommandBuilder } = require('discord.js');
+
 module.exports = {
-  name: '8ball',
-  description: 'Odpowiada na pytania tak/nie',
-  execute(message, args) {
-    if (!args.length) {
-      return message.reply('Zadaj pytanie.');
-    }
+  data: new SlashCommandBuilder()
+    .setName('8ball')
+    .setDescription('Odpowiada na pytania tak/nie')
+    .addStringOption(option =>
+      option.setName('pytanie')
+        .setDescription('Treść pytania')
+        .setRequired(true)
+    ),
+  async execute(interaction) {
     const responses = [
       'Tak',
       'Nie',
@@ -15,6 +20,6 @@ module.exports = {
       'Nie chcesz wiedzieć'
     ];
     const response = responses[Math.floor(Math.random() * responses.length)];
-    message.channel.send(response);
+    await interaction.reply(response);
   }
 };
