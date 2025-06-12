@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="View roles">
-  <title>Roles</title>
+  <meta name="description" content="Manage member roles">
+  <title>Role Manager</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Roboto+Slab:wght@600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -27,13 +27,25 @@
   </div>
   <main class="main">
     <div class="card tilt">
-      <h1 id="server-name">Roles</h1>
-      <ul id="roles"></ul>
-      <a id="manageRoles" class="btn" href="#">Manage Roles</a>
+      <h1 id="server-name">Role Manager</h1>
+      <form id="roleForm">
+        <div class="form-group">
+          <label>Member</label>
+          <select id="member"></select>
+        </div>
+        <div class="form-group">
+          <label>Role</label>
+          <select id="role"></select>
+        </div>
+        <div class="form-group">
+          <button class="btn" data-action="add" type="button">Add Role</button>
+          <button class="btn" data-action="remove" type="button">Remove Role</button>
+        </div>
+      </form>
     </div>
   </main>
   <footer class="footer">Panel MODSN.AI &copy; 2025</footer>
   <script src="script.js"></script>
-  <script src="roles.js"></script>
+  <script src="role-manager.js"></script>
 </body>
 </html>

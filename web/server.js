@@ -58,6 +58,7 @@ module.exports = function startWebServer(client) {
   app.get('/admin.html', requireAuth, sendProtected('admin.html'));
   app.get('/user.html', requireAuth, sendProtected('user.html'));
   app.get('/commands.html', requireAuth, sendProtected('commands.html'));
+  app.get('/role-manager.html', requireAuth, sendProtected('role-manager.html'));
 
   app.use(express.static(staticPath));
 
@@ -314,6 +315,28 @@ module.exports = function startWebServer(client) {
     } catch (err) {
       console.error(err);
       res.status(500).send('Failed to fetch roles');
+    }
+  });
+
+  app.post('/member-role/:guildId', requireAuth, verifyGuildAccess, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.guildId);
+    if (!guild) return res.status(404).send('Guild not found');
+    const { memberId, roleId, action } = req.body;
+    if (!memberId || !roleId || !['add', 'remove'].includes(action)) {
+      return res.status(400).send('Invalid payload');
+    }
+    try {
+      const member = await guild.members.fetch(memberId);
+      if (!member) return res.status(404).send('Member not found');
+      if (action === 'add') {
+        await member.roles.add(roleId);
+      } else {
+        await member.roles.remove(roleId);
+      }
+      res.send('OK');
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Failed to modify role');
     }
   });
 

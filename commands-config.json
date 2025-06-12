@@ -7,7 +7,22 @@
     "ping": true,
     "poll": true,
     "siema": true,
-    "userinfo": true
+    "userinfo": true,
+    "serverinfo": true,
+    "avatar": true,
+    "roll": true,
+    "choose": true,
+    "flip": true,
+    "say": true,
+    "clear": true,
+    "mute": true,
+    "unmute": true,
+    "unban": true,
+    "uptime": true,
+    "nick": true,
+    "addrole": true,
+    "removerole": true,
+    "membercount": true
   },
   "guilds": {}
 }

@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   const list = document.getElementById('roles');
   const header = document.getElementById('server-name');
+  const manage = document.getElementById('manageRoles');
   try {
     const guilds = await fetchJSON('/guilds');
     const guild = guilds.find(g => g.id === guildId);
@@ -21,4 +22,5 @@ document.addEventListener('DOMContentLoaded', async () => {
       list.appendChild(li);
     });
   }
+  if (manage) manage.href = `role-manager.html?guildId=${guildId}`;
 });
