@@ -1,28 +1,28 @@
 :root {
   /* Kolory */
-  --primary: #007bff;
-  --primary-dark: #0056b3;
-  --primary-light: rgba(0, 123, 255, 0.1);
-  --background: #f5f7fa;
-  --card-bg: #ffffff;
-  --card-bg-hover: #f0f0f0;
-  --text: #333333;
-  --text-secondary: #555555;
-  --text-tertiary: #777777;
-  --border: #cccccc;
-  --border-light: #dddddd;
+  --primary: #5865F2;
+  --primary-dark: #4752C4;
+  --primary-light: rgba(88, 101, 242, 0.1);
+  --background: #1e1e2e;
+  --card-bg: #2a2a3a;
+  --card-bg-hover: #313145;
+  --text: #f0f0f5;
+  --text-secondary: #b8b8d0;
+  --text-tertiary: #8a8a9a;
+  --border: #3a3a4a;
+  --border-light: #4a4a5a;
   --success: #57F287;
   --danger: #ED4245;
   --warning: #FEE75C;
   --info: #5b8af0;
 
   /* Typography */
-  --font-base: 'Roboto', Arial, sans-serif;
-  --font-heading: 'Roboto Slab', serif;
+  --font-base: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-heading: 'Poppins', sans-serif;
 
   /* Hero gradient */
-  --hero-bg-start: #d8e2f0;
-  --hero-bg-end: #ffffff;
+  --hero-bg-start: #1a1a2e;
+  --hero-bg-end: #2a2a3a;
 
   /* Cienie */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
@@ -332,10 +332,20 @@ body.no-sidebar {
   padding: 0.875rem 1rem;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border);
-  background-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.05);
   color: var(--text);
   font-size: 1rem;
   transition: all var(--transition-fast);
+}
+.form-group select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23ccc' stroke-width='2' viewBox='0 0 24 24'%3e%3cpath d='M6 9l6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+  padding-right: 2.5rem;
 }
 
 .form-group input:focus,
@@ -343,8 +353,8 @@ body.no-sidebar {
 .form-group textarea:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
-  background-color: #f9f9f9;
+  box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.2);
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
 .form-group textarea {
