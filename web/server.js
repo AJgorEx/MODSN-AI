@@ -221,6 +221,22 @@ module.exports = function startWebServer(client) {
     }
   });
 
+  app.post('/embed', requireAuth, async (req, res) => {
+    const { channelId, embed } = req.body;
+    const channel = client.channels.cache.get(channelId);
+    if (!channel) return res.status(400).send('Channel not found');
+    if (!embed || typeof embed !== 'object') {
+      return res.status(400).send('Invalid embed');
+    }
+    try {
+      await channel.send({ embeds: [embed] });
+      res.send('Embed sent');
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Failed to send embed');
+    }
+  });
+
   app.listen(PORT, () =>
     console.log(`\uD83D\uDD0C Web management listening on port ${PORT}`)
   );

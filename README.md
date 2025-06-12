@@ -30,6 +30,10 @@ node index.js
 Aplikacja wystartuje na porcie `3000`. Otwórz `http://localhost:3000` w przeglądarce i zaloguj się przez Discord.
 Jeżeli bot nie jest jeszcze na Twoim serwerze, skorzystaj z adresu `http://localhost:3000/invite` aby go dodać.
 
+## Embed messages
+
+W panelu administracyjnym znajdziesz sekcję **Rich Embed**, która pozwala zbudować zaawansowaną wiadomość z tytułem, opisem, kolorem oraz emoji. Gotowy embed możesz wysłać na wybrany kanał serwera.
+
 ## Testy
 
 W projekcie nie ma zdefiniowanych testów, ale polecenie `npm test` jest wymagane przed wysłaniem zmian.
