@@ -19,7 +19,7 @@ module.exports = function startWebServer(client) {
   app.use(express.json());
 
   // Cookie parser MUST come before the session middleware
-  app.use(cookieParser());
+  app.use(cookieParser(process.env.SESSION_SECRET));
   app.use(helmet());
 
   app.use(
@@ -28,7 +28,8 @@ module.exports = function startWebServer(client) {
       resave: false,
       saveUninitialized: false,
       cookie: {
-        sameSite: 'lax'
+        sameSite: 'lax',
+        secure: false
       }
     })
   );
