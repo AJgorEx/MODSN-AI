@@ -125,6 +125,25 @@ body {
   color: var(--violet);
 }
 
+.form-group {
+  margin-bottom: 1rem;
+  text-align: left;
+  width: 100%;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 0.25rem;
+}
+
 ul { list-style: none; padding: 0; margin: 0; }
 ul li { margin: 0.5rem 0; }
 ul li a { color: var(--text); text-decoration: none; padding: 0.5rem; display: block; border-radius: 0.25rem; transition: background 0.3s; }
