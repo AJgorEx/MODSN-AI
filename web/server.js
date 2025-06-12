@@ -280,6 +280,25 @@ module.exports = function startWebServer(client) {
     res.send('OK');
   });
 
+  app.get('/leave-settings/:guildId', requireAuth, verifyGuildAccess, (req, res) => {
+    const guildId = req.params.guildId;
+    const set = client.guildSettings.get(guildId);
+    res.json({
+      channel: set.leaveChannel || '',
+      message: set.leaveMessage || ''
+    });
+  });
+
+  app.post('/leave-settings/:guildId', requireAuth, verifyGuildAccess, (req, res) => {
+    const guildId = req.params.guildId;
+    const { channel, message } = req.body;
+    if (typeof channel !== 'string' || typeof message !== 'string') {
+      return res.status(400).send('Invalid payload');
+    }
+    client.guildSettings.set(guildId, { leaveChannel: channel, leaveMessage: message });
+    res.send('OK');
+  });
+
   app.get('/guilds', requireAuth, async (req, res) => {
     try {
       const guilds = await fetchUserGuilds(req);

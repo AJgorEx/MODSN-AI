@@ -141,6 +141,13 @@ client.on('guildMemberRemove', member => {
     const logCh = member.guild.channels.cache.get(settings.logChannel);
     if (logCh) logCh.send({ content: `${member.user.tag} left the server.` }).catch(console.error);
   }
+  if (settings.leaveChannel && settings.leaveMessage) {
+    const channel = member.guild.channels.cache.get(settings.leaveChannel);
+    if (channel) {
+      const msg = settings.leaveMessage.replace('{user}', `<@${member.id}>`);
+      channel.send({ content: msg }).catch(console.error);
+    }
+  }
 });
 
 client.login(process.env.DISCORD_TOKEN);

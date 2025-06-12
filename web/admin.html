@@ -43,6 +43,9 @@
       const welcomeChannelSelect = document.getElementById('welcomeChannel');
       const welcomeMessageInput = document.getElementById('welcomeMessage');
       const saveWelcome = document.getElementById('saveWelcome');
+      const leaveChannelSelect = document.getElementById('leaveChannel');
+      const leaveMessageInput = document.getElementById('leaveMessage');
+      const saveLeave = document.getElementById('saveLeave');
       const logChannelSelect = document.getElementById('logChannel');
       const autoRoleSelect = document.getElementById('autoRole');
       const saveAdvanced = document.getElementById('saveAdvanced');
@@ -107,6 +110,13 @@
             if (w.message && welcomeMessageInput) welcomeMessageInput.value = w.message;
           }
         } catch (_) {}
+        try {
+          const l = await fetchJSON(`/leave-settings/${guildId}`);
+          if (l) {
+            if (l.channel && leaveChannelSelect) leaveChannelSelect.value = l.channel;
+            if (l.message && leaveMessageInput) leaveMessageInput.value = l.message;
+          }
+        } catch (_) {}
         if (saveSettings) {
           saveSettings.addEventListener('click', async () => {
             try {
@@ -140,6 +150,24 @@
             }
           });
         }
+        if (saveLeave) {
+          saveLeave.addEventListener('click', async () => {
+            try {
+              const res = await fetch(`/leave-settings/${guildId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  channel: leaveChannelSelect.value,
+                  message: leaveMessageInput.value
+                })
+              });
+              const text = await res.text();
+              if (res.ok) notify('success', text); else notify('error', text);
+            } catch (err) {
+              notify('error', err.message);
+            }
+          });
+        }
         if (saveAdvanced) {
           saveAdvanced.addEventListener('click', async () => {
             try {
@@ -164,12 +192,16 @@
         if (welcomeChannelSelect) welcomeChannelSelect.disabled = true;
         if (welcomeMessageInput) welcomeMessageInput.disabled = true;
         if (saveWelcome) saveWelcome.disabled = true;
+        if (leaveChannelSelect) leaveChannelSelect.disabled = true;
+        if (leaveMessageInput) leaveMessageInput.disabled = true;
+        if (saveLeave) saveLeave.disabled = true;
       }
 
       const loadChannels = async (id) => {
         channelSelect.innerHTML = '';
         if (embedChannelSelect) embedChannelSelect.innerHTML = '';
         if (welcomeChannelSelect) welcomeChannelSelect.innerHTML = '';
+        if (leaveChannelSelect) leaveChannelSelect.innerHTML = '';
         if (logChannelSelect) logChannelSelect.innerHTML = '<option value="">None</option>';
         const channels = await fetchJSON(`/channels/${id}`);
         if (channels)
@@ -189,6 +221,12 @@
               opt3.value = c.id;
               opt3.textContent = c.name;
               welcomeChannelSelect.appendChild(opt3);
+            }
+            if (leaveChannelSelect) {
+              const optL = document.createElement('option');
+              optL.value = c.id;
+              optL.textContent = c.name;
+              leaveChannelSelect.appendChild(optL);
             }
             if (logChannelSelect) {
               const opt4 = document.createElement('option');
@@ -584,6 +622,19 @@
         <small>Use {user} to mention the new member</small>
       </div>
       <button id="saveWelcome" class="btn" style="margin-top:1rem;">Save Welcome</button>
+    </div>
+    <div class="card tilt" style="margin-top:2rem;">
+      <h2>Leave Settings</h2>
+      <div class="form-group">
+        <label>Leave Channel</label>
+        <select id="leaveChannel"></select>
+      </div>
+      <div class="form-group">
+        <label>Leave Message</label>
+        <input type="text" id="leaveMessage">
+        <small>Use {user} to mention the member</small>
+      </div>
+      <button id="saveLeave" class="btn" style="margin-top:1rem;">Save Leave</button>
     </div>
     <div class="card tilt" style="margin-top:2rem;">
       <h2>Advanced Settings</h2>
