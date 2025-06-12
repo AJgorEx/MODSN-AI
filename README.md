@@ -32,7 +32,7 @@ Jeżeli bot nie jest jeszcze na Twoim serwerze, skorzystaj z adresu `http://loca
 
 ## Embed messages
 
-W panelu administracyjnym znajdziesz sekcję **Rich Embed**, która pozwala zbudować zaawansowaną wiadomość z tytułem, opisem, kolorem oraz emoji. Gotowy embed możesz wysłać na wybrany kanał serwera.
+W panelu administracyjnym znajdziesz sekcję **Rich Embed**, która pozwala zbudować zaawansowaną wiadomość z tytułem, opisem, kolorem oraz emoji. Teraz dostępny jest picker emoji, przyciski do formatowania tekstu z podglądem oraz podgląd gotowego embed przed wysłaniem. Gotowy embed możesz wysłać na wybrany kanał serwera.
 
 ## Testy
 

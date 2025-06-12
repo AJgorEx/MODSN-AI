@@ -7,6 +7,7 @@
   <title>Admin Zone</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="embed.css">
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       const user = await loadUserInfo();
@@ -20,7 +21,9 @@
       const channelSelect = document.getElementById('channel');
       const form = document.getElementById('msgForm');
       const embedForm = document.getElementById('embedForm');
-      const emojiSelect = document.getElementById('emoji');
+      const emojiInput = document.getElementById('emojiInput');
+      const emojiPicker = document.getElementById('emojiPicker');
+      const embedPreview = document.getElementById('embedPreview');
       const embedTitle = document.getElementById('embedTitle');
       const embedDescription = document.getElementById('embedDescription');
       const embedColor = document.getElementById('embedColor');
@@ -33,6 +36,7 @@
       const embedThumbnail = document.getElementById('embedThumbnail');
       const embedTimestamp = document.getElementById('embedTimestamp');
       const embedFields = document.getElementById('embedFields');
+      const descPreview = document.getElementById('descPreview');
       const params = new URLSearchParams(window.location.search);
       const guildId = params.get('guildId');
       const commandsLink = document.getElementById('commandsLink');
@@ -72,6 +76,125 @@
         guildSelect.dispatchEvent(new Event('change'));
       }
 
+      const formatButtons = document.querySelectorAll('.formatting-toolbar button');
+
+      function applyFormat(fmt) {
+        const start = embedDescription.selectionStart;
+        const end = embedDescription.selectionEnd;
+        let prefix = fmt;
+        let suffix = fmt;
+        if (fmt === '```') {
+          prefix = '```\n';
+          suffix = '\n```';
+        }
+        const selected = embedDescription.value.slice(start, end);
+        embedDescription.setRangeText(prefix + selected + suffix, start, end, 'end');
+        embedDescription.focus();
+        updatePreview();
+      }
+
+      formatButtons.forEach(btn => btn.addEventListener('click', () => applyFormat(btn.dataset.format)));
+
+      emojiInput.addEventListener('click', () => {
+        emojiPicker.style.display = 'block';
+      });
+
+      emojiPicker.addEventListener('emoji-click', e => {
+        emojiInput.value = e.detail.unicode;
+        emojiPicker.style.display = 'none';
+        updatePreview();
+      });
+
+      document.addEventListener('click', e => {
+        if (!emojiPicker.contains(e.target) && e.target !== emojiInput) {
+          emojiPicker.style.display = 'none';
+        }
+      });
+
+      function formatDiscord(text) {
+        return text
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/__(.*?)__/g, '<u>$1</u>')
+          .replace(/~~(.*?)~~/g, '<s>$1</s>')
+          .replace(/```([\s\S]+?)```/g, '<pre>$1</pre>')
+          .replace(/`([^`]+)`/g, '<code>$1</code>');
+      }
+
+      function buildPreviewEmbed() {
+        const embed = {
+          title: embedTitle.value,
+          description: `${emojiInput.value ? emojiInput.value + ' ' : ''}${embedDescription.value}`.trim(),
+          color: embedColor.value
+        };
+        if (embedUrl.value) embed.url = embedUrl.value;
+        if (embedTimestamp.checked) embed.timestamp = new Date().toISOString();
+        if (embedAuthorName.value || embedAuthorIcon.value) {
+          embed.author = {};
+          if (embedAuthorName.value) embed.author.name = embedAuthorName.value;
+          if (embedAuthorIcon.value) embed.author.icon_url = embedAuthorIcon.value;
+        }
+        if (embedFooterText.value || embedFooterIcon.value) {
+          embed.footer = {};
+          if (embedFooterText.value) embed.footer.text = embedFooterText.value;
+          if (embedFooterIcon.value) embed.footer.icon_url = embedFooterIcon.value;
+        }
+        if (embedImage.value) embed.image = { url: embedImage.value };
+        if (embedThumbnail.value) embed.thumbnail = { url: embedThumbnail.value };
+        if (embedFields.value.trim()) {
+          embed.fields = embedFields.value.trim().split('\n').map(line => {
+            const [name, value, inline] = line.split('|');
+            return { name: name || '', value: value || '', inline: inline === 'inline' };
+          });
+        }
+        return embed;
+      }
+
+      function updatePreview() {
+        const embed = buildPreviewEmbed();
+        descPreview.innerHTML = formatDiscord(embedDescription.value);
+        let html = '';
+        if (embed.author && embed.author.name) {
+          html += '<div class="embed-author">';
+          if (embed.author.icon_url) html += `<img src="${embed.author.icon_url}" alt="">`;
+          html += `<span>${embed.author.name}</span></div>`;
+        }
+        if (embed.title) html += `<div class="embed-title">${embed.title}</div>`;
+        if (embed.description) html += `<div class="embed-description">${formatDiscord(embed.description)}</div>`;
+        if (Array.isArray(embed.fields)) {
+          html += '<div class="embed-fields">';
+          embed.fields.forEach(f => {
+            html += `<div class="embed-field"><strong>${f.name}</strong>: ${formatDiscord(f.value)}</div>`;
+          });
+          html += '</div>';
+        }
+        if (embed.footer && embed.footer.text) {
+          html += '<div class="embed-footer">';
+          if (embed.footer.icon_url) html += `<img src="${embed.footer.icon_url}" alt="">`;
+          html += `<span>${embed.footer.text}</span></div>`;
+        }
+        embedPreview.style.borderLeftColor = embed.color;
+        embedPreview.innerHTML = html;
+      }
+
+      [
+        embedTitle,
+        embedDescription,
+        embedColor,
+        embedUrl,
+        embedAuthorName,
+        embedAuthorIcon,
+        embedFooterText,
+        embedFooterIcon,
+        embedImage,
+        embedThumbnail,
+        embedTimestamp,
+        embedFields,
+        emojiInput
+      ].forEach(el => el && el.addEventListener('input', updatePreview));
+
+      updatePreview();
+
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
         const body = {
@@ -92,7 +215,7 @@
           e.preventDefault();
           const embed = {
             title: embedTitle.value,
-            description: `${emojiSelect.value} ${embedDescription.value}`.trim(),
+            description: `${emojiInput.value ? emojiInput.value + ' ' : ''}${embedDescription.value}`.trim(),
             color: parseInt(embedColor.value.replace('#', ''), 16)
           };
           if (embedUrl.value) embed.url = embedUrl.value;
@@ -178,7 +301,16 @@
         </div>
         <div class="form-group">
           <label>Description</label>
+          <div class="formatting-toolbar">
+            <button type="button" data-format="**"><b>B</b></button>
+            <button type="button" data-format="*"><i>I</i></button>
+            <button type="button" data-format="__"><u>U</u></button>
+            <button type="button" data-format="~~"><s>S</s></button>
+            <button type="button" data-format="`">Code</button>
+            <button type="button" data-format="```">Block</button>
+          </div>
           <textarea id="embedDescription" required></textarea>
+          <div id="descPreview" class="desc-preview"></div>
         </div>
         <div class="form-group">
           <label>Color</label>
@@ -221,18 +353,18 @@
         </div>
         <div class="form-group">
           <label>Emoji Prefix</label>
-          <select id="emoji">
-            <option value="">None</option>
-            <option value="😀">😀 Smile</option>
-            <option value="🚀">🚀 Rocket</option>
-            <option value="🔥">🔥 Fire</option>
-          </select>
+          <div class="emoji-picker-wrapper">
+            <input type="text" id="emojiInput" readonly placeholder="Click to pick">
+            <emoji-picker id="emojiPicker"></emoji-picker>
+          </div>
         </div>
         <button class="btn" style="margin-top:1rem;">Send Embed</button>
+        <div id="embedPreview" class="embed-preview"></div>
       </form>
     </div>
   </main>
   <footer class="footer">Panel MODSN.AI &copy; 2025</footer>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1"></script>
   <script src="script.js"></script>
 </body>
 </html>
