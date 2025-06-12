@@ -59,6 +59,7 @@ module.exports = function startWebServer(client) {
   app.get('/user.html', requireAuth, sendProtected('user.html'));
   app.get('/commands.html', requireAuth, sendProtected('commands.html'));
   app.get('/role-manager.html', requireAuth, sendProtected('role-manager.html'));
+  app.get('/economy-admin.html', requireAuth, sendProtected('economy-admin.html'));
 
   app.use(express.static(staticPath));
 
@@ -438,6 +439,48 @@ module.exports = function startWebServer(client) {
       const reward = client.economy.gamble(id, amt);
       const user = client.economy.getUser(id);
       res.json({ balance: user.balance, bank: user.bank, reward });
+    } catch (err) {
+      console.error(err);
+      res.status(400).send(err.message);
+    }
+  });
+
+  app.get('/economy/user/:guildId/:userId', requireAuth, verifyGuildAccess, (req, res) => {
+    try {
+      const user = client.economy.getUser(req.params.userId);
+      res.json({ balance: user.balance, bank: user.bank });
+    } catch (err) {
+      console.error(err);
+      res.status(400).send('Failed to fetch user economy');
+    }
+  });
+
+  app.post('/economy/user/:guildId/:userId', requireAuth, verifyGuildAccess, (req, res) => {
+    try {
+      const { action, amount } = req.body;
+      const id = req.params.userId;
+      const amt = parseInt(amount, 10) || 0;
+      switch (action) {
+        case 'addWallet':
+          client.economy.addBalance(id, amt, 'admin');
+          break;
+        case 'addBank':
+          client.economy.addBank(id, amt);
+          break;
+        case 'setWallet':
+          client.economy.setBalance(id, amt);
+          break;
+        case 'setBank':
+          client.economy.setBank(id, amt);
+          break;
+        case 'resetCooldowns':
+          client.economy.resetCooldowns(id);
+          break;
+        default:
+          return res.status(400).send('Invalid action');
+      }
+      const user = client.economy.getUser(id);
+      res.json({ balance: user.balance, bank: user.bank });
     } catch (err) {
       console.error(err);
       res.status(400).send(err.message);
