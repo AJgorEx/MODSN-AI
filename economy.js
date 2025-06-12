@@ -998,3 +998,193 @@ EconomySystem.prototype.progressQuest = function (id, quest, amount) {
 // Additional economic logic line 719
 // Additional economic logic line 720
 // Additional economic logic line 721
+
+// New utility functions expanding the economy system
+EconomySystem.prototype.setBalance = function (id, amount) {
+  const user = this.getUser(id);
+  user.balance = amount;
+  this.save();
+};
+
+EconomySystem.prototype.setBank = function (id, amount) {
+  const user = this.getUser(id);
+  user.bank = amount;
+  this.save();
+};
+
+EconomySystem.prototype.resetCooldowns = function (id) {
+  const user = this.getUser(id);
+  user.lastDaily = 0;
+  user.lastWork = 0;
+  this.save();
+};
+
+EconomySystem.prototype.addInventoryItem = function (id, itemId) {
+  const user = this.getUser(id);
+  user.inventory.push(itemId);
+  this.save();
+};
+
+EconomySystem.prototype.removeInventoryItem = function (id, itemId) {
+  const user = this.getUser(id);
+  const idx = user.inventory.indexOf(itemId);
+  if (idx !== -1) {
+    user.inventory.splice(idx, 1);
+    this.save();
+  }
+};
+
+EconomySystem.prototype.hasItem = function (id, itemId) {
+  const user = this.getUser(id);
+  return user.inventory.includes(itemId);
+};
+
+EconomySystem.prototype.clearInventory = function (id) {
+  const user = this.getUser(id);
+  user.inventory = [];
+  this.save();
+};
+
+EconomySystem.prototype.transactionCount = function (id) {
+  const user = this.getUser(id);
+  return user.transactions.length;
+};
+
+EconomySystem.prototype.getLoanInfo = function (id) {
+  const user = this.getUser(id);
+  return user.bankAccount || { loans: 0, interest: 0 };
+};
+
+EconomySystem.prototype.setLoanRate = function (id, rate) {
+  const user = this.getUser(id);
+  this.createBankAccount(id);
+  user.bankAccount.interest = rate;
+  this.save();
+};
+
+EconomySystem.prototype.clearLoans = function (id) {
+  const user = this.getUser(id);
+  if (user.bankAccount) {
+    user.bankAccount.loans = 0;
+    user.bankAccount.interest = 0;
+    this.save();
+  }
+};
+
+EconomySystem.prototype.addGuild = function (guildId) {
+  if (!this.data.guilds) this.data.guilds = {};
+  if (!this.data.guilds[guildId]) {
+    this.data.guilds[guildId] = { bank: 0 };
+    this.save();
+  }
+};
+
+EconomySystem.prototype.removeGuild = function (guildId) {
+  if (this.data.guilds) {
+    delete this.data.guilds[guildId];
+    this.save();
+  }
+};
+
+EconomySystem.prototype.getGuildBank = function (guildId) {
+  return this.data.guilds?.[guildId]?.bank || 0;
+};
+
+EconomySystem.prototype.renameUser = function (oldId, newId) {
+  if (this.data.users[oldId] && !this.data.users[newId]) {
+    this.data.users[newId] = this.data.users[oldId];
+    delete this.data.users[oldId];
+    this.save();
+  }
+};
+
+EconomySystem.prototype.getShopItem = function (itemId) {
+  return this.data.shop.find(i => i.id === itemId);
+};
+
+EconomySystem.prototype.updateShopItem = function (itemId, data) {
+  const item = this.getShopItem(itemId);
+  if (item) {
+    Object.assign(item, data);
+    this.save();
+  }
+};
+
+EconomySystem.prototype.removeShopItem = function (itemId) {
+  const idx = this.data.shop.findIndex(i => i.id === itemId);
+  if (idx !== -1) {
+    this.data.shop.splice(idx, 1);
+    this.save();
+  }
+};
+
+EconomySystem.prototype.listUserIds = function () {
+  return Object.keys(this.data.users);
+};
+
+EconomySystem.prototype.getNetWorth = function (id) {
+  const user = this.getUser(id);
+  return user.balance + user.bank;
+};
+
+EconomySystem.prototype.setGuildBank = function (guildId, amount) {
+  this.addGuild(guildId);
+  this.data.guilds[guildId].bank = amount;
+  this.save();
+};
+
+EconomySystem.prototype.applyInterest = function () {
+  for (const id in this.data.users) {
+    const user = this.data.users[id];
+    if (user.bank > 0) {
+      const interest = Math.floor(user.bank * 0.02);
+      user.bank += interest;
+    }
+  }
+  this.save();
+};
+
+EconomySystem.prototype.totalEconomyWorth = function () {
+  return Object.values(this.data.users)
+    .reduce((sum, u) => sum + u.balance + u.bank, 0);
+};
+
+EconomySystem.prototype.moveBalance = function (from, to, amt) {
+  this.subtractBalance(from, amt, 'move');
+  this.addBalance(to, amt, 'move');
+};
+
+EconomySystem.prototype.depositAll = function (id) {
+  const user = this.getUser(id);
+  this.deposit(id, user.balance);
+};
+
+EconomySystem.prototype.withdrawAll = function (id) {
+  const user = this.getUser(id);
+  this.withdraw(id, user.bank);
+};
+
+EconomySystem.prototype.inventoryValue = function (id) {
+  const user = this.getUser(id);
+  return user.inventory
+    .map(itemId => this.getShopItem(itemId)?.price || 0)
+    .reduce((a, b) => a + b, 0);
+};
+
+EconomySystem.prototype.bankRankings = function () {
+  const arr = Object.entries(this.data.users).map(([id, u]) => ({
+    id,
+    bank: u.bank
+  }));
+  return arr.sort((a, b) => b.bank - a.bank);
+};
+
+EconomySystem.prototype.clearTransactions = function (id) {
+  const user = this.getUser(id);
+  user.transactions = [];
+  this.save();
+};
+
+EconomySystem.prototype.totalUserCount = function () {
+  return Object.keys(this.data.users).length;
+};
