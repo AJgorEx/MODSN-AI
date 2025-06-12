@@ -4,6 +4,7 @@ require('dotenv').config();
 const { Client, Collection, GatewayIntentBits, Partials } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
+const startWebServer = require('./web/server');
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds],
@@ -23,6 +24,7 @@ for (const file of commandFiles) {
 
 client.once('ready', () => {
   console.log(`✅ Logged in as ${client.user.tag}`);
+  startWebServer(client);
 });
 
 client.on('interactionCreate', async interaction => {
