@@ -5,14 +5,14 @@
   <title>Admin Zone</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
   <script>
-    async function fetchJSON(url) { const r = await fetch(url); return r.ok ? r.json() : {}; }
     document.addEventListener('DOMContentLoaded', async () => {
       const user = await fetchJSON('/me');
-      document.getElementById('username').textContent = user.username;
+      if (user.username) document.getElementById('username').textContent = user.username;
       const avatarUrl = user.avatar
         ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`
-        : `https://cdn.discordapp.com/embed/avatars/${(parseInt(user.discriminator)||0)%5}.png`;
+        : `https://cdn.discordapp.com/embed/avatars/${(parseInt(user.discriminator ?? '0')||0)%5}.png`;
       document.getElementById('avatar').src = avatarUrl;
 
       const stats = await fetchJSON('/stats');
@@ -24,12 +24,18 @@
       const params = new URLSearchParams(window.location.search);
       const pre = params.get('guildId');
       const guilds = await fetchJSON('/guilds');
-      guilds.forEach(g => {
+      if (guilds.length) {
+        guilds.forEach(g => {
+          const opt = document.createElement('option');
+          opt.value = g.id;
+          opt.textContent = g.name;
+          guildSelect.appendChild(opt);
+        });
+      } else {
         const opt = document.createElement('option');
-        opt.value = g.id;
-        opt.textContent = g.name;
+        opt.textContent = 'No servers';
         guildSelect.appendChild(opt);
-      });
+      }
       if (pre) guildSelect.value = pre;
       guildSelect.addEventListener('change', async () => {
         channelSelect.innerHTML = '';
@@ -92,6 +98,5 @@
       </form>
     </div>
   </main>
-  <script src="script.js"></script>
 </body>
 </html>

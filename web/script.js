@@ -1,3 +1,15 @@
+// helper for API calls
+window.fetchJSON = async function (url) {
+  try {
+    const r = await fetch(url, { credentials: 'same-origin' });
+    if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
+    return await r.json();
+  } catch (err) {
+    console.error('fetchJSON', err);
+    return {};
+  }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   // 3D tilt effect
   document.querySelectorAll('.tilt').forEach(card => {

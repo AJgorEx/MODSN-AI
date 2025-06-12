@@ -5,14 +5,14 @@
   <title>Select Server</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
   <script>
-    async function fetchJSON(url){const r=await fetch(url);return r.ok? r.json():{};}
     document.addEventListener('DOMContentLoaded',async()=>{
       const user=await fetchJSON('/me');
-      document.getElementById('username').textContent=user.username;
+      if(user.username) document.getElementById('username').textContent=user.username;
       const avatarUrl = user.avatar
         ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`
-        : `https://cdn.discordapp.com/embed/avatars/${(parseInt(user.discriminator)||0)%5}.png`;
+        : `https://cdn.discordapp.com/embed/avatars/${(parseInt(user.discriminator ?? '0')||0)%5}.png`;
       document.getElementById('avatar').src = avatarUrl;
 
       const stats = await fetchJSON('/stats');
@@ -20,14 +20,20 @@
 
       const list=document.getElementById('guilds');
       const guilds=await fetchJSON('/guilds');
-      guilds.forEach(g=>{
+      if(guilds.length){
+        guilds.forEach(g=>{
+          const li=document.createElement('li');
+          const link=document.createElement('a');
+          link.textContent=g.name;
+          link.href=`admin.html?guildId=${g.id}`;
+          li.appendChild(link);
+          list.appendChild(li);
+        });
+      } else {
         const li=document.createElement('li');
-        const link=document.createElement('a');
-        link.textContent=g.name;
-        link.href=`admin.html?guildId=${g.id}`;
-        li.appendChild(link);
+        li.textContent='No servers';
         list.appendChild(li);
-      });
+      }
     });
   </script>
 </head>
@@ -48,6 +54,5 @@
       <ul id="guilds"></ul>
     </div>
   </main>
-  <script src="script.js"></script>
 </body>
 </html>
