@@ -14,23 +14,28 @@
 .formatting-toolbar button:hover {
   background-color: var(--primary-dark);
 }
+
+.embed-form {
+  display: grid;
+  gap: 1rem;
+}
 .emoji-picker-wrapper {
   position: relative;
 }
 #emojiPicker {
   position: absolute;
-  bottom: 110%;
+  top: calc(100% + 0.25rem);
   display: none;
   z-index: 10;
 }
 .embed-preview {
   margin-top: 1rem;
-  border-left: 4px solid var(--primary);
-  background-color: var(--card-bg);
-  padding: 1rem;
+  border-left: 3px solid var(--primary);
+  background-color: rgba(255, 255, 255, 0.03);
+  padding: 0.75rem;
   border-radius: var(--radius-sm);
   color: var(--text);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 .embed-preview .embed-title {
   font-weight: 600;
