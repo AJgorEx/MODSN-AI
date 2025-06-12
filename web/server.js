@@ -4,12 +4,15 @@ const session = require('express-session');
 const path = require('path');
 const crypto = require('crypto');
 const helmet = require('helmet');
+const fs = require('fs');
 // `fetch` is available globally in recent Node versions
 // no additional import is required
 
 module.exports = function startWebServer(client) {
   const app = express();
   const PORT = process.env.PORT || 3000;
+
+  const configPath = path.join(__dirname, '../commands-config.json');
 
   const CLIENT_ID = process.env.CLIENT_ID;
   const CLIENT_SECRET = process.env.CLIENT_SECRET;
@@ -54,6 +57,7 @@ module.exports = function startWebServer(client) {
   app.get('/servers.html', requireAuth, sendProtected('servers.html'));
   app.get('/admin.html', requireAuth, sendProtected('admin.html'));
   app.get('/user.html', requireAuth, sendProtected('user.html'));
+  app.get('/commands.html', requireAuth, sendProtected('commands.html'));
 
   app.use(express.static(staticPath));
 
@@ -149,6 +153,20 @@ module.exports = function startWebServer(client) {
 
   app.get('/stats', requireAuth, (req, res) => {
     res.json({ botGuilds: client.guilds.cache.size });
+  });
+
+  app.get('/command-status', requireAuth, (req, res) => {
+    res.json(client.commandStatus);
+  });
+
+  app.post('/command-status', requireAuth, (req, res) => {
+    const { command, enabled } = req.body;
+    if (typeof client.commandStatus[command] === 'undefined') {
+      return res.status(400).send('Invalid command');
+    }
+    client.commandStatus[command] = !!enabled;
+    client.saveCommandStatus();
+    res.send('OK');
   });
 
   app.get('/guilds', requireAuth, async (req, res) => {

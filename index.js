@@ -6,12 +6,24 @@ const fs = require('fs');
 const path = require('path');
 const startWebServer = require('./web/server');
 
+const configPath = path.join(__dirname, 'commands-config.json');
+let commandStatus = {};
+try {
+  commandStatus = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+} catch (_) {
+  commandStatus = {};
+}
+
 const client = new Client({
   intents: [GatewayIntentBits.Guilds],
   partials: [Partials.Channel]
 });
 
 client.commands = new Collection();
+client.commandStatus = commandStatus;
+client.saveCommandStatus = function () {
+  fs.writeFileSync(configPath, JSON.stringify(client.commandStatus, null, 2));
+};
 
 const commandsPath = path.join(__dirname, 'commands');
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
@@ -31,6 +43,9 @@ client.on('interactionCreate', async interaction => {
   if (!interaction.isChatInputCommand()) return;
   const command = client.commands.get(interaction.commandName);
   if (!command) return;
+  if (client.commandStatus[interaction.commandName] === false) {
+    return interaction.reply({ content: 'Ta komenda jest wyłączona.', ephemeral: true });
+  }
   try {
     await command.execute(interaction);
   } catch (error) {
