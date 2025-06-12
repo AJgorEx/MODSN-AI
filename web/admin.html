@@ -56,6 +56,7 @@
       const serverInfoLink = document.getElementById('serverInfoLink');
       const roleManagerLink = document.getElementById('roleManagerLink');
       const economyLink = document.getElementById('economyLink');
+      const membersLink = document.getElementById('membersLink');
 
       if (guildId) {
         const guilds = await fetchJSON('/guilds');
@@ -92,6 +93,13 @@
           roleManagerLink.href = `role-manager.html?guildId=${guildId}`;
         } else {
           roleManagerLink.style.display = 'none';
+        }
+      }
+      if (membersLink) {
+        if (guildId) {
+          membersLink.href = `members.html?guildId=${guildId}`;
+        } else {
+          membersLink.style.display = 'none';
         }
       }
       if (economyLink) {
@@ -507,6 +515,7 @@
       <a href="commands.html" id="commandsLink" class="link">Commands</a>
       <a href="roles.html" id="rolesLink" class="link">Roles</a>
       <a href="server-info.html" id="serverInfoLink" class="link">Server Info</a>
+      <a href="members.html" id="membersLink" class="link">Members</a>
       <a href="role-manager.html" id="roleManagerLink" class="link">Role Manager</a>
       <a href="economy-admin.html" id="economyLink" class="link">Economy</a>
       <a href="economy-config.html" id="economyConfigLink" class="link">Economy Settings</a>
