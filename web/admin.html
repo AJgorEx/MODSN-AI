@@ -40,6 +40,9 @@
       const descPreview = document.getElementById('descPreview');
       const defaultColor = document.getElementById('defaultColor');
       const saveSettings = document.getElementById('saveSettings');
+      const welcomeChannelSelect = document.getElementById('welcomeChannel');
+      const welcomeMessageInput = document.getElementById('welcomeMessage');
+      const saveWelcome = document.getElementById('saveWelcome');
       const params = new URLSearchParams(window.location.search);
       const guildId = params.get('guildId');
       const commandsLink = document.getElementById('commandsLink');
@@ -90,6 +93,13 @@
           const settings = await fetchJSON(`/settings/${guildId}`);
           if (settings && settings.color) defaultColor.value = settings.color;
         } catch (_) {}
+        try {
+          const w = await fetchJSON(`/welcome-settings/${guildId}`);
+          if (w) {
+            if (w.channel && welcomeChannelSelect) welcomeChannelSelect.value = w.channel;
+            if (w.message && welcomeMessageInput) welcomeMessageInput.value = w.message;
+          }
+        } catch (_) {}
         if (saveSettings) {
           saveSettings.addEventListener('click', async () => {
             try {
@@ -105,14 +115,36 @@
             }
           });
         }
+        if (saveWelcome) {
+          saveWelcome.addEventListener('click', async () => {
+            try {
+              const res = await fetch(`/welcome-settings/${guildId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  channel: welcomeChannelSelect.value,
+                  message: welcomeMessageInput.value
+                })
+              });
+              const text = await res.text();
+              if (res.ok) notify('success', text); else notify('error', text);
+            } catch (err) {
+              notify('error', err.message);
+            }
+          });
+        }
       } else if (defaultColor && saveSettings) {
         defaultColor.disabled = true;
         saveSettings.disabled = true;
+        if (welcomeChannelSelect) welcomeChannelSelect.disabled = true;
+        if (welcomeMessageInput) welcomeMessageInput.disabled = true;
+        if (saveWelcome) saveWelcome.disabled = true;
       }
 
       const loadChannels = async (id) => {
         channelSelect.innerHTML = '';
         if (embedChannelSelect) embedChannelSelect.innerHTML = '';
+        if (welcomeChannelSelect) welcomeChannelSelect.innerHTML = '';
         const channels = await fetchJSON(`/channels/${id}`);
         if (channels)
           channels.forEach(c => {
@@ -125,6 +157,12 @@
               opt2.value = c.id;
               opt2.textContent = c.name;
               embedChannelSelect.appendChild(opt2);
+            }
+            if (welcomeChannelSelect) {
+              const opt3 = document.createElement('option');
+              opt3.value = c.id;
+              opt3.textContent = c.name;
+              welcomeChannelSelect.appendChild(opt3);
             }
           });
       };
@@ -485,6 +523,19 @@
         <input type="color" id="defaultColor" value="#5865F2">
       </div>
       <button id="saveSettings" class="btn" style="margin-top:1rem;">Save Settings</button>
+    </div>
+    <div class="card tilt" style="margin-top:2rem;">
+      <h2>Welcome Settings</h2>
+      <div class="form-group">
+        <label>Welcome Channel</label>
+        <select id="welcomeChannel"></select>
+      </div>
+      <div class="form-group">
+        <label>Welcome Message</label>
+        <input type="text" id="welcomeMessage">
+        <small>Use {user} to mention the new member</small>
+      </div>
+      <button id="saveWelcome" class="btn" style="margin-top:1rem;">Save Welcome</button>
     </div>
   </main>
   <div id="notifications" class="notifications"></div>

@@ -114,4 +114,15 @@ client.on('interactionCreate', async interaction => {
   }
 });
 
+client.on('guildMemberAdd', member => {
+  const settings = guildSettings.get(member.guild.id);
+  if (settings.welcomeChannel && settings.welcomeMessage) {
+    const channel = member.guild.channels.cache.get(settings.welcomeChannel);
+    if (channel) {
+      const msg = settings.welcomeMessage.replace('{user}', `<@${member.id}>`);
+      channel.send({ content: msg }).catch(console.error);
+    }
+  }
+});
+
 client.login(process.env.DISCORD_TOKEN);
