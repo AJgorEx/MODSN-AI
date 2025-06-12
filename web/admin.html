@@ -3,13 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>Admin Zone</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <script>
-    async function fetchJSON(url) {
-      const r = await fetch(url);
-      return r.ok ? r.json() : {};
-    }
+    async function fetchJSON(url) { const r = await fetch(url); return r.ok ? r.json() : {}; }
     document.addEventListener('DOMContentLoaded', async () => {
       const user = await fetchJSON('/me');
       document.getElementById('username').textContent = user.username;
@@ -76,7 +73,7 @@
     </nav>
   </div>
   <main class="main">
-    <div class="glass card">
+    <div class="card tilt">
       <h1>Admin Zone</h1>
       <form id="msgForm">
         <div class="form-group">
@@ -95,5 +92,6 @@
       </form>
     </div>
   </main>
+  <script src="script.js"></script>
 </body>
 </html>
