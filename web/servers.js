@@ -20,5 +20,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       list.appendChild(li);
     });
     invite.innerHTML = "<button type='button' class='btn' onclick=\"location.href='/invite'\">Add Bot to Server</button>";
+    invite.innerHTML = "<button class='btn' onclick=\"location.href='/invite'\">Add Bot to Server</button>";
   }
 });
