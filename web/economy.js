@@ -82,6 +82,18 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
   });
+
+  document.getElementById('resetEcoBtn')?.addEventListener('click', async () => {
+    const ok = confirm('Reset your economy data?');
+    if (!ok) return;
+    try {
+      await fetchJSON('/economy/reset', { method: 'POST' });
+      await refreshEconomy();
+      notify('success', 'Economy reset');
+    } catch (e) {
+      notify('error', e.message);
+    }
+  });
 });
 
 async function refreshEconomy() {

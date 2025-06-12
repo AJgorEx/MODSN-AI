@@ -61,6 +61,11 @@ function loadPreferences() {
   const scale = prefs.scale || 100;
   if (scaleInput) scaleInput.value = scale;
   applyScale(scale);
+  const accentInput = document.getElementById('accentColor');
+  if (accentInput && prefs.accent) {
+    accentInput.value = prefs.accent;
+    applyAccentColor(prefs.accent);
+  }
 }
 
 function savePreferences() {
@@ -69,10 +74,12 @@ function savePreferences() {
     lang: document.getElementById('langSelect')?.value,
     showStatus: document.getElementById('statusToggle')?.checked,
     advanced: document.getElementById('advancedToggle')?.checked,
-    scale: parseInt(document.getElementById('scaleRange')?.value, 10) || 100
+    scale: parseInt(document.getElementById('scaleRange')?.value, 10) || 100,
+    accent: document.getElementById('accentColor')?.value || '#5865F2'
   };
   localStorage.setItem('userPrefs', JSON.stringify(prefs));
   applyScale(prefs.scale);
+  applyAccentColor(prefs.accent);
   notify('success', 'Settings saved');
 }
 
@@ -91,7 +98,36 @@ document.addEventListener('DOMContentLoaded', () => {
   loadPreferences();
   document.getElementById('saveSettingsBtn')?.addEventListener('click', savePreferences);
   document.getElementById('scaleRange')?.addEventListener('input', e => applyScale(e.target.value));
+  document.getElementById('copyId')?.addEventListener('click', async () => {
+    const user = await loadUserInfo();
+    if (user) {
+      navigator.clipboard.writeText(user.id);
+      notify('success', 'Copied');
+    }
+  });
+  showUsage();
 });
+
+function applyAccentColor(color) {
+  document.documentElement.style.setProperty('--primary', color);
+}
+
+async function showUsage() {
+  try {
+    const usage = await fetchJSON('/command-usage');
+    const entries = Object.entries(usage).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    const list = document.getElementById('usageList');
+    const card = document.getElementById('usageCard');
+    if (!list || !card) return;
+    list.innerHTML = '';
+    entries.forEach(([cmd, count]) => {
+      const li = document.createElement('li');
+      li.textContent = `${cmd}: ${count}`;
+      list.appendChild(li);
+    });
+    card.style.display = entries.length ? 'block' : 'none';
+  } catch (_) {}
+}
 
 function notify(type, msg) {
   const container = document.getElementById('notifications');

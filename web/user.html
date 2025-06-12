@@ -28,6 +28,7 @@
     <h1>User Zone</h1>
     <img id="avatar" class="avatar" src="" alt="avatar">
     <p id="username"></p>
+    <button id="copyId" class="btn btn-sm" type="button">Copy ID</button>
     <a href="/logout" class="link">Logout</a>
   </div>
   <div class="card tilt economy-card">
@@ -43,6 +44,7 @@
       <button id="dailyBtn" class="btn btn-sm" type="button">Claim Daily</button>
       <button id="workBtn" class="btn btn-sm" type="button">Work</button>
       <button id="gambleBtn" class="btn btn-sm" type="button">Gamble</button>
+      <button id="resetEcoBtn" class="btn btn-sm" type="button">Reset</button>
     </div>
   </div>
   <div class="card tilt settings-card">
@@ -79,7 +81,15 @@
       <label for="scaleRange">Interface Scale</label>
       <input id="scaleRange" type="range" min="80" max="120" step="5" value="100">
     </div>
+    <div class="form-group">
+      <label for="accentColor">Accent Color</label>
+      <input id="accentColor" type="color" value="#5865F2">
+    </div>
     <button id="saveSettingsBtn" class="btn btn-sm" type="button">Save Settings</button>
+  </div>
+  <div class="card tilt" id="usageCard" style="display:none;">
+    <h2>Top Commands</h2>
+    <ul id="usageList"></ul>
   </div>
   </main>
   <div id="notifications" class="notifications"></div>

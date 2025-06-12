@@ -494,6 +494,59 @@
           embedForm.reset();
         });
       }
+      document.getElementById('exportRoles')?.addEventListener('click', async () => {
+        try {
+          const data = await fetchJSON(`/export/roles/${guildId}`);
+          const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'roles.json';
+          a.click();
+          URL.revokeObjectURL(url);
+        } catch (err) {
+          notify('error', err.message);
+        }
+      });
+      document.getElementById('exportInfo')?.addEventListener('click', async () => {
+        try {
+          const data = await fetchJSON(`/export/server/${guildId}`);
+          const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'server.json';
+          a.click();
+          URL.revokeObjectURL(url);
+        } catch (err) {
+          notify('error', err.message);
+        }
+      });
+      document.getElementById('broadcastBtn')?.addEventListener('click', async () => {
+        const msg = document.getElementById('broadcastMsg').value.trim();
+        if (!msg) return;
+        try {
+          const res = await fetch(`/broadcast/${guildId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: msg })
+          });
+          const text = await res.text();
+          if (res.ok) notify('success', text); else notify('error', text);
+        } catch (err) {
+          notify('error', err.message);
+        }
+      });
+      document.getElementById('clearLogs')?.addEventListener('click', async () => {
+        if (!confirm('Clear log channel messages?')) return;
+        try {
+          const res = await fetch(`/clear-logs/${guildId}`, { method: 'POST' });
+          const text = await res.text();
+          if (res.ok) notify('success', text); else notify('error', text);
+        } catch (err) {
+          notify('error', err.message);
+        }
+      });
     });
   </script>
 </head>
@@ -665,6 +718,20 @@
         <select id="autoRole"></select>
       </div>
       <button id="saveAdvanced" class="btn" style="margin-top:1rem;">Save Advanced</button>
+    </div>
+    <div class="card tilt" style="margin-top:2rem;">
+      <h2>Server Tools</h2>
+      <div class="form-group">
+        <button id="exportRoles" class="btn btn-sm" type="button">Export Roles</button>
+        <button id="exportInfo" class="btn btn-sm" type="button">Export Info</button>
+      </div>
+      <div class="form-group">
+        <input id="broadcastMsg" class="input" type="text" placeholder="Broadcast message">
+        <button id="broadcastBtn" class="btn btn-sm" type="button">Send</button>
+      </div>
+      <div class="form-group">
+        <button id="clearLogs" class="btn btn-sm" type="button">Clear Logs</button>
+      </div>
     </div>
   </main>
   <div id="notifications" class="notifications"></div>

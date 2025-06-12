@@ -613,6 +613,91 @@ module.exports = function startWebServer(client) {
     }
   });
 
+  app.post('/economy/reset', requireAuth, async (req, res) => {
+    try {
+      const id = await getUserId(req);
+      client.economy.setBalance(id, 0);
+      client.economy.setBank(id, 0);
+      client.economy.resetCooldowns(id);
+      res.send('OK');
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Failed to reset economy');
+    }
+  });
+
+  app.get('/command-usage', requireAuth, (req, res) => {
+    res.json(client.commandUsage);
+  });
+
+  app.get('/export/roles/:guildId', requireAuth, verifyGuildAccess, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.guildId);
+    if (!guild) return res.status(404).send('Guild not found');
+    try {
+      const roles = (await guild.roles.fetch()).map(r => ({ id: r.id, name: r.name }));
+      res.json(roles);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Failed to fetch roles');
+    }
+  });
+
+  app.get('/export/server/:guildId', requireAuth, verifyGuildAccess, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.guildId);
+    if (!guild) return res.status(404).send('Guild not found');
+    try {
+      await guild.fetch();
+      res.json({
+        id: guild.id,
+        name: guild.name,
+        memberCount: guild.memberCount,
+        ownerId: guild.ownerId,
+        createdAt: guild.createdAt,
+        icon: guild.iconURL({ size: 128 }) || null,
+        description: guild.description || ''
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Failed to fetch server info');
+    }
+  });
+
+  app.post('/broadcast/:guildId', requireAuth, verifyGuildAccess, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.guildId);
+    if (!guild) return res.status(404).send('Guild not found');
+    const { message } = req.body;
+    if (typeof message !== 'string' || !message.trim() || message.length > 2000) {
+      return res.status(400).send('Invalid message');
+    }
+    try {
+      const channels = (await guild.channels.fetch()).filter(ch => ch.isTextBased());
+      for (const ch of channels.values()) {
+        await ch.send(message);
+      }
+      res.send('OK');
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Failed to broadcast');
+    }
+  });
+
+  app.post('/clear-logs/:guildId', requireAuth, verifyGuildAccess, async (req, res) => {
+    const guildId = req.params.guildId;
+    const settings = client.guildSettings.get(guildId);
+    const logId = settings.logChannel;
+    if (!logId) return res.status(400).send('No log channel set');
+    const channel = client.channels.cache.get(logId);
+    if (!channel) return res.status(400).send('Invalid log channel');
+    try {
+      const msgs = await channel.messages.fetch({ limit: 50 });
+      await channel.bulkDelete(msgs, true);
+      res.send('OK');
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Failed to clear logs');
+    }
+  });
+
   app.post('/dm/:userId', requireAuth, async (req, res) => {
     const { userId } = req.params;
     const { message } = req.body;
