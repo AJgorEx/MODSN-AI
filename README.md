@@ -57,6 +57,8 @@ Bot oferuje także szereg bardziej rozbudowanych komend:
 - `/dog` - zdjęcie psa.
 - `/time` - aktualny czas UTC.
 
+Bot zlicza także ile razy każda komenda została użyta. Liczbę użyć znajdziesz w poleceniu `/help` obok opisu komendy.
+
 ## Testy
 
 W projekcie nie ma zdefiniowanych testów, ale polecenie `npm test` jest wymagane przed wysłaniem zmian.

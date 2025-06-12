@@ -40,6 +40,26 @@ client.isCommandEnabled = function (guildId, command) {
   return client.commandStatus.default[command] !== false;
 };
 
+const usagePath = path.join(__dirname, 'data/command-usage.json');
+let commandUsage = {};
+try {
+  commandUsage = JSON.parse(fs.readFileSync(usagePath, 'utf8'));
+} catch (_) {
+  commandUsage = {};
+}
+client.commandUsage = commandUsage;
+client.saveCommandUsage = function () {
+  fs.writeFileSync(usagePath, JSON.stringify(client.commandUsage, null, 2));
+};
+client.incrementCommandUsage = function (cmd) {
+  if (!this.commandUsage[cmd]) this.commandUsage[cmd] = 0;
+  this.commandUsage[cmd]++;
+  this.saveCommandUsage();
+};
+client.getCommandUsage = function (cmd) {
+  return this.commandUsage[cmd] || 0;
+};
+
 client.guildSettings = guildSettings;
 client.getEmbedColor = function (guildId) {
   const color = guildSettings.get(guildId).color || '#5865F2';
@@ -81,6 +101,7 @@ client.on('interactionCreate', async interaction => {
   if (!client.isCommandEnabled(interaction.guildId, interaction.commandName)) {
     return interaction.reply({ content: 'Ta komenda jest wyłączona na tym serwerze.', ephemeral: true });
   }
+  client.incrementCommandUsage(interaction.commandName);
   try {
     await command.execute(interaction);
   } catch (error) {
