@@ -237,11 +237,27 @@ module.exports = function startWebServer(client) {
 
   app.post('/settings/:guildId', requireAuth, verifyGuildAccess, (req, res) => {
     const guildId = req.params.guildId;
-    const { color } = req.body;
-    if (typeof color !== 'string' || !/^#?[0-9a-fA-F]{6}$/.test(color)) {
-      return res.status(400).send('Invalid color');
+    const { color, logChannel, autoRole } = req.body;
+    const update = {};
+    if (color !== undefined) {
+      if (typeof color !== 'string' || !/^#?[0-9a-fA-F]{6}$/.test(color)) {
+        return res.status(400).send('Invalid color');
+      }
+      update.color = color.startsWith('#') ? color : '#' + color;
     }
-    client.setEmbedColor(guildId, color.startsWith('#') ? color : '#' + color);
+    if (logChannel !== undefined) {
+      if (typeof logChannel !== 'string') {
+        return res.status(400).send('Invalid logChannel');
+      }
+      update.logChannel = logChannel;
+    }
+    if (autoRole !== undefined) {
+      if (typeof autoRole !== 'string') {
+        return res.status(400).send('Invalid autoRole');
+      }
+      update.autoRole = autoRole;
+    }
+    if (Object.keys(update).length) client.guildSettings.set(guildId, update);
     res.send('OK');
   });
 

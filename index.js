@@ -116,12 +116,28 @@ client.on('interactionCreate', async interaction => {
 
 client.on('guildMemberAdd', member => {
   const settings = guildSettings.get(member.guild.id);
+  if (settings.autoRole) {
+    const role = member.guild.roles.cache.get(settings.autoRole);
+    if (role) member.roles.add(role).catch(console.error);
+  }
+  if (settings.logChannel) {
+    const logCh = member.guild.channels.cache.get(settings.logChannel);
+    if (logCh) logCh.send({ content: `${member.user.tag} joined the server.` }).catch(console.error);
+  }
   if (settings.welcomeChannel && settings.welcomeMessage) {
     const channel = member.guild.channels.cache.get(settings.welcomeChannel);
     if (channel) {
       const msg = settings.welcomeMessage.replace('{user}', `<@${member.id}>`);
       channel.send({ content: msg }).catch(console.error);
     }
+  }
+});
+
+client.on('guildMemberRemove', member => {
+  const settings = guildSettings.get(member.guild.id);
+  if (settings.logChannel) {
+    const logCh = member.guild.channels.cache.get(settings.logChannel);
+    if (logCh) logCh.send({ content: `${member.user.tag} left the server.` }).catch(console.error);
   }
 });
 
