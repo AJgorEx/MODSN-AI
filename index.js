@@ -5,6 +5,7 @@ const { Client, Collection, GatewayIntentBits, Partials } = require('discord.js'
 const fs = require('fs');
 const path = require('path');
 const startWebServer = require('./web/server');
+const EconomySystem = require('./economy');
 
 const configPath = path.join(__dirname, 'commands-config.json');
 let commandStatus = {};
@@ -20,9 +21,12 @@ try {
 }
 
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds],
+  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers],
   partials: [Partials.Channel]
 });
+
+client.economy = new EconomySystem(path.join(__dirname, 'data/economy.json'));
+client.economy.load();
 
 client.commands = new Collection();
 client.commandStatus = commandStatus;
