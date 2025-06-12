@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="User zone for MODSN.AI">
   <title>User Zone</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poppins:wght@400;600&family=Fira+Code&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Poppins:wght@400;600&family=Fira+Code&family=Roboto:wght@400;700&family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
@@ -17,14 +17,15 @@
   <header class="topbar">
     <h2>MODSN.AI</h2>
     <nav>
-      <a href="servers.html" class="link">Servers</a>
+      <button class="link" onclick="location.href='servers.html'">Servers</button>
     </nav>
   </header>
   <div class="card tilt fade-in">
     <h1>User Zone</h1>
+    <p>Here you can review your account details and manage personal settings.</p>
     <img id="avatar" class="avatar" src="" alt="avatar">
     <p id="username"></p>
-    <a href="/logout" class="link">Logout</a>
+    <button class="link" onclick="location.href='/logout'">Logout</button>
   </div>
   <script src="script.js"></script>
   <footer class="footer">Panel MODSN.AI &copy; 2024</footer>
