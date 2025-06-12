@@ -79,24 +79,23 @@ class EconomySystem {
     this.addBalance(to, amt, 'transfer');
   }
 
-  daily(id) {
+  daily(id, reward = 100) {
     const user = this.getUser(id);
     const now = Date.now();
     if (now - user.lastDaily < 24 * 60 * 60 * 1000) {
       throw new Error('Daily already claimed');
     }
-    const reward = 100;
     user.lastDaily = now;
     this.addBalance(id, reward, 'daily');
   }
 
-  work(id) {
+  work(id, min = 50, max = 100) {
     const user = this.getUser(id);
     const now = Date.now();
     if (now - user.lastWork < 60 * 60 * 1000) {
       throw new Error('Work cooldown');
     }
-    const reward = Math.floor(Math.random() * 50) + 50;
+    const reward = Math.floor(Math.random() * (max - min + 1)) + min;
     user.lastWork = now;
     this.addBalance(id, reward, 'work');
     return reward;
@@ -1187,11 +1186,11 @@ EconomySystem.prototype.withdrawAll = function (id) {
   this.withdraw(id, user.bank);
 };
 
-EconomySystem.prototype.gamble = function (id, amount) {
+EconomySystem.prototype.gamble = function (id, amount, multiplier = 2) {
   this.subtractBalance(id, amount, 'gamble-bet');
   const win = Math.random() < 0.5;
   if (win) {
-    const reward = amount * 2;
+    const reward = amount * multiplier;
     this.addBalance(id, reward, 'gamble-win');
     return reward;
   }

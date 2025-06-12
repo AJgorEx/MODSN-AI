@@ -461,7 +461,8 @@ module.exports = function startWebServer(client) {
   app.post('/economy/daily', requireAuth, async (req, res) => {
     try {
       const id = await getUserId(req);
-      client.economy.daily(id);
+      const cfg = client.economyConfig.get();
+      client.economy.daily(id, cfg.dailyReward);
       const user = client.economy.getUser(id);
       res.json({ balance: user.balance, bank: user.bank });
     } catch (err) {
@@ -473,7 +474,8 @@ module.exports = function startWebServer(client) {
   app.post('/economy/work', requireAuth, async (req, res) => {
     try {
       const id = await getUserId(req);
-      const reward = client.economy.work(id);
+      const cfg = client.economyConfig.get();
+      const reward = client.economy.work(id, cfg.workMin, cfg.workMax);
       const user = client.economy.getUser(id);
       res.json({ balance: user.balance, bank: user.bank, reward });
     } catch (err) {
@@ -486,13 +488,48 @@ module.exports = function startWebServer(client) {
     try {
       const id = await getUserId(req);
       const amt = parseInt(req.body.amount, 10);
-      const reward = client.economy.gamble(id, amt);
+      const cfg = client.economyConfig.get();
+      const reward = client.economy.gamble(id, amt, cfg.gambleMultiplier);
       const user = client.economy.getUser(id);
       res.json({ balance: user.balance, bank: user.bank, reward });
     } catch (err) {
       console.error(err);
       res.status(400).send(err.message);
     }
+  });
+
+  app.get('/economy-config', requireAuth, (req, res) => {
+    res.json(client.economyConfig.get());
+  });
+
+  app.post('/economy-config', requireAuth, (req, res) => {
+    const { dailyReward, workMin, workMax, gambleMultiplier } = req.body;
+    const update = {};
+    if (dailyReward !== undefined) {
+      const val = parseInt(dailyReward, 10);
+      if (isNaN(val) || val <= 0) return res.status(400).send('Invalid dailyReward');
+      update.dailyReward = val;
+    }
+    if (workMin !== undefined) {
+      const val = parseInt(workMin, 10);
+      if (isNaN(val) || val < 0) return res.status(400).send('Invalid workMin');
+      update.workMin = val;
+    }
+    if (workMax !== undefined) {
+      const val = parseInt(workMax, 10);
+      if (isNaN(val) || val < 0) return res.status(400).send('Invalid workMax');
+      update.workMax = val;
+    }
+    if (update.workMin !== undefined && update.workMax !== undefined && update.workMax < update.workMin) {
+      return res.status(400).send('workMax must be >= workMin');
+    }
+    if (gambleMultiplier !== undefined) {
+      const val = parseFloat(gambleMultiplier);
+      if (isNaN(val) || val <= 0) return res.status(400).send('Invalid gambleMultiplier');
+      update.gambleMultiplier = val;
+    }
+    if (Object.keys(update).length) client.economyConfig.set(update);
+    res.send('OK');
   });
 
   app.get('/economy/user/:guildId/:userId', requireAuth, verifyGuildAccess, (req, res) => {
