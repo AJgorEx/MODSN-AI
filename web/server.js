@@ -1,45 +1,107 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const session = require('express-session');
 const path = require('path');
+const crypto = require('crypto');
 
 module.exports = function startWebServer(client) {
   const app = express();
   const PORT = process.env.PORT || 3000;
-  const ADMIN_TOKEN = process.env.ADMIN_TOKEN;
-  const USER_TOKEN = process.env.USER_TOKEN;
+
+  const CLIENT_ID = process.env.CLIENT_ID;
+  const CLIENT_SECRET = process.env.CLIENT_SECRET;
+  const REDIRECT_URI = process.env.REDIRECT_URI;
 
   app.use(express.urlencoded({ extended: true }));
+  app.use(express.json());
   app.use(cookieParser());
+  app.use(session({
+    secret: process.env.SESSION_SECRET || 'super-secret',
+    resave: false,
+    saveUninitialized: false
+  }));
   app.use(express.static(path.join(__dirname)));
 
-  app.post('/login', (req, res) => {
-    const token = req.body.token;
-    if (ADMIN_TOKEN && token === ADMIN_TOKEN) {
-      res.cookie('role', 'admin', { httpOnly: true });
-      return res.redirect('/admin.html');
+  app.get('/login', (req, res) => {
+    const state = crypto.randomBytes(16).toString('hex');
+    req.session.oauthState = state;
+    const params = new URLSearchParams({
+      client_id: CLIENT_ID,
+      redirect_uri: REDIRECT_URI,
+      response_type: 'code',
+      scope: 'identify guilds',
+      state
+    });
+    res.redirect(`https://discord.com/api/oauth2/authorize?${params.toString()}`);
+  });
+
+  app.get('/callback', async (req, res) => {
+    const { code, state } = req.query;
+    if (!code || state !== req.session.oauthState) {
+      return res.status(400).send('Invalid state');
     }
-    if (USER_TOKEN && token === USER_TOKEN) {
-      res.cookie('role', 'user', { httpOnly: true });
-      return res.redirect('/user.html');
+    delete req.session.oauthState;
+    try {
+      const params = new URLSearchParams({
+        client_id: CLIENT_ID,
+        client_secret: CLIENT_SECRET,
+        grant_type: 'authorization_code',
+        code,
+        redirect_uri: REDIRECT_URI
+      });
+      const tokenRes = await fetch('https://discord.com/api/oauth2/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params
+      });
+      const token = await tokenRes.json();
+      if (!token.access_token) return res.status(401).send('Auth failed');
+      req.session.accessToken = token.access_token;
+      res.redirect('/admin.html');
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('OAuth failed');
     }
-    res.status(401).send('Invalid token');
   });
 
   app.get('/logout', (req, res) => {
-    res.clearCookie('role');
-    res.redirect('/');
+    req.session.destroy(() => res.redirect('/'));
   });
 
-  app.post('/message', async (req, res) => {
-    if (req.cookies.role !== 'admin') {
-      return res.status(403).send('Forbidden');
+  function requireAuth(req, res, next) {
+    if (!req.session.accessToken) return res.status(401).send('Unauthorized');
+    next();
+  }
+
+  app.get('/guilds', requireAuth, async (req, res) => {
+    try {
+      const guildRes = await fetch('https://discord.com/api/users/@me/guilds', {
+        headers: { Authorization: `Bearer ${req.session.accessToken}` }
+      });
+      const guilds = await guildRes.json();
+      const botGuilds = client.guilds.cache;
+      const filtered = guilds.filter(g => botGuilds.has(g.id));
+      res.json(filtered);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Failed to fetch guilds');
     }
-    const channelId = req.body.channelId;
-    const message = req.body.message;
+  });
+
+  app.get('/channels/:guildId', requireAuth, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.guildId);
+    if (!guild) return res.status(404).send('Guild not found');
+    await guild.channels.fetch();
+    const channels = guild.channels.cache
+      .filter(ch => ch.isTextBased())
+      .map(ch => ({ id: ch.id, name: ch.name }));
+    res.json(channels);
+  });
+
+  app.post('/message', requireAuth, async (req, res) => {
+    const { channelId, message } = req.body;
     const channel = client.channels.cache.get(channelId);
-    if (!channel) {
-      return res.status(400).send('Channel not found');
-    }
+    if (!channel) return res.status(400).send('Channel not found');
     try {
       await channel.send(message);
       res.send('Message sent');
@@ -49,5 +111,7 @@ module.exports = function startWebServer(client) {
     }
   });
 
-  app.listen(PORT, () => console.log(`\uD83D\uDD0C Web management listening on port ${PORT}`));
+  app.listen(PORT, () =>
+    console.log(`\uD83D\uDD0C Web management listening on port ${PORT}`)
+  );
 };
