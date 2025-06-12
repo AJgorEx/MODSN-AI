@@ -22,6 +22,7 @@
       document.getElementById('stats').textContent = `Bot on ${stats.botGuilds} servers`;
 
       const list=document.getElementById('guilds');
+      const invite=document.getElementById('invite');
       const guilds=await fetchJSON('/guilds');
       guilds.forEach(g=>{
         const li=document.createElement('li');
@@ -31,6 +32,9 @@
         li.appendChild(link);
         list.appendChild(li);
       });
+      if(guilds.length===0){
+        invite.innerHTML='<a class="btn" href="https://discord.com/oauth2/authorize?client_id=1382682041283510272&permissions=8&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fcallback&integration_type=0&scope=identify+guilds+guilds.channels.read+bot">Add Bot to Server</a>';
+      }
     });
   </script>
 </head>
@@ -55,6 +59,7 @@
     <div class="card tilt">
       <h1>Select server</h1>
       <ul id="guilds"></ul>
+      <div id="invite"></div>
     </div>
   </main>
   <footer class="footer">Panel MODSN.AI &copy; 2024</footer>
