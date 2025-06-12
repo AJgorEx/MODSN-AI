@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Economy settings">
+  <title>Economy Settings</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Roboto+Slab:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <h2>MODSN.AI</h2>
+    <nav>
+      <a href="servers.html" class="link">Servers</a>
+    </nav>
+  </header>
+  <div class="sidebar">
+    <div class="user-info">
+      <img id="avatar" class="avatar" src="" alt="avatar">
+      <div id="username"></div>
+    </div>
+    <nav>
+      <a href="servers.html" class="link">Servers</a>
+      <a href="admin.html" class="link">Admin</a>
+      <a href="/logout" class="link">Logout</a>
+    </nav>
+  </div>
+  <main class="main">
+    <div class="card tilt">
+      <h1>Economy Settings</h1>
+      <div class="form-group">
+        <label>Daily Reward</label>
+        <input type="number" id="dailyReward" min="1" value="100">
+      </div>
+      <div class="form-group">
+        <label>Work Min Reward</label>
+        <input type="number" id="workMin" min="0" value="50">
+      </div>
+      <div class="form-group">
+        <label>Work Max Reward</label>
+        <input type="number" id="workMax" min="0" value="100">
+      </div>
+      <div class="form-group">
+        <label>Gamble Multiplier</label>
+        <input type="number" id="gambleMultiplier" step="0.1" min="0.1" value="2">
+      </div>
+      <button id="saveEconomyCfg" class="btn" style="margin-top:1rem;">Save</button>
+    </div>
+  </main>
+  <div id="notifications" class="notifications"></div>
+  <footer class="footer">Panel MODSN.AI &copy; 2025</footer>
+  <script src="script.js"></script>
+  <script src="economy-config.js"></script>
+</body>
+</html>

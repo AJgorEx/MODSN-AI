@@ -7,6 +7,7 @@ const path = require('path');
 const startWebServer = require('./web/server');
 const EconomySystem = require('./economy');
 const guildSettings = require('./guildSettings');
+const economyConfig = require('./economyConfig');
 
 const configPath = path.join(__dirname, 'commands-config.json');
 let commandStatus = {};
@@ -28,6 +29,7 @@ const client = new Client({
 
 client.economy = new EconomySystem(path.join(__dirname, 'data/economy.json'));
 client.economy.load();
+client.economyConfig = economyConfig;
 
 client.commands = new Collection();
 client.commandStatus = commandStatus;

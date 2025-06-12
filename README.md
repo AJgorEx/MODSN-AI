@@ -41,6 +41,7 @@ Now the panel includes a **Roles** page where you can view server roles. Access 
 ## Economy commands
 
 Bot includes an in-chat economy. Use `/daily` and `/work` to earn coins, `/deposit` and `/withdraw` to manage your bank balance and `/gamble` to risk your coins for a chance to double them.
+Administrators can now adjust economy rewards from the new **Economy Settings** page in the web panel.
 
 ## Advanced commands
 
