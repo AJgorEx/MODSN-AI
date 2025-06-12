@@ -11,7 +11,8 @@ module.exports = {
     ),
   async execute(interaction) {
     const question = interaction.options.getString('pytanie');
-    const pollMessage = await interaction.reply({ content: `\uD83D\uDCCA **${question}**`, fetchReply: true });
+    const embed = interaction.client.createEmbed(interaction.guildId, { description: `📊 **${question}**` });
+    const pollMessage = await interaction.reply({ embeds: [embed], fetchReply: true });
     await pollMessage.react('👍');
     await pollMessage.react('👎');
   }

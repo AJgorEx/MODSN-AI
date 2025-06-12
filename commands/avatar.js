@@ -9,6 +9,10 @@ module.exports = {
   async execute(interaction) {
     const user = interaction.options.getUser('user') || interaction.user;
     const ext = user.avatar && user.avatar.startsWith('a_') ? 'gif' : 'png';
-    await interaction.reply(user.displayAvatarURL({ extension: ext, size: 512 }));
+    const embed = interaction.client.createEmbed(interaction.guildId, {
+      title: user.tag,
+      image: { url: user.displayAvatarURL({ extension: ext, size: 512 }) }
+    });
+    await interaction.reply({ embeds: [embed] });
   }
 };

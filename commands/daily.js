@@ -7,9 +7,11 @@ module.exports = {
   async execute(interaction) {
     try {
       interaction.client.economy.daily(interaction.user.id);
-      await interaction.reply('You claimed your daily 100 coins!');
+      const embed = interaction.client.createEmbed(interaction.guildId, { description: 'You claimed your daily 100 coins!' });
+      await interaction.reply({ embeds: [embed] });
     } catch (e) {
-      await interaction.reply({ content: 'Daily already claimed.', ephemeral: true });
+      const embedErr = interaction.client.createEmbed(interaction.guildId, { description: 'Daily already claimed.' });
+      await interaction.reply({ embeds: [embedErr], ephemeral: true });
     }
   }
 };

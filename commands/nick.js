@@ -8,12 +8,17 @@ module.exports = {
     .addStringOption(o => o.setName('name').setDescription('New nickname').setRequired(true)),
   async execute(interaction) {
     if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageNicknames)) {
-      return interaction.reply({ content: 'Missing permission.', ephemeral: true });
+      const embed = interaction.client.createEmbed(interaction.guildId, { description: 'Missing permission.' });
+      return interaction.reply({ embeds: [embed], ephemeral: true });
     }
     const member = interaction.options.getMember('user');
     const name = interaction.options.getString('name');
-    if (!member) return interaction.reply({ content: 'User not found.', ephemeral: true });
+    if (!member) {
+      const embedErr = interaction.client.createEmbed(interaction.guildId, { description: 'User not found.' });
+      return interaction.reply({ embeds: [embedErr], ephemeral: true });
+    }
     await member.setNickname(name).catch(() => {});
-    await interaction.reply({ content: `Changed nickname for ${member.user.tag}.`, ephemeral: true });
+    const embed = interaction.client.createEmbed(interaction.guildId, { description: `Changed nickname for ${member.user.tag}.` });
+    await interaction.reply({ embeds: [embed], ephemeral: true });
   }
 };

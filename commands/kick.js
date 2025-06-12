@@ -11,18 +11,22 @@ module.exports = {
     ),
   async execute(interaction) {
     if (!interaction.member.permissions.has(PermissionsBitField.Flags.KickMembers)) {
-      return interaction.reply({ content: 'Nie masz uprawnień do wyrzucania użytkowników.', ephemeral: true });
+      const embed = interaction.client.createEmbed(interaction.guildId, { description: 'Nie masz uprawnień do wyrzucania użytkowników.' });
+      return interaction.reply({ embeds: [embed], ephemeral: true });
     }
     const member = interaction.options.getMember('uzytkownik');
     if (!member) {
-      return interaction.reply({ content: 'Nie mogę znaleźć użytkownika.', ephemeral: true });
+      const embedErr = interaction.client.createEmbed(interaction.guildId, { description: 'Nie mogę znaleźć użytkownika.' });
+      return interaction.reply({ embeds: [embedErr], ephemeral: true });
     }
     try {
       await member.kick();
-      await interaction.reply(`Użytkownik ${member.user.tag} został wyrzucony.`);
+      const embed = interaction.client.createEmbed(interaction.guildId, { description: `Użytkownik ${member.user.tag} został wyrzucony.` });
+      await interaction.reply({ embeds: [embed] });
     } catch (err) {
       console.error(err);
-      interaction.reply({ content: 'Nie udało się wyrzucić użytkownika.', ephemeral: true });
+      const embedErr = interaction.client.createEmbed(interaction.guildId, { description: 'Nie udało się wyrzucić użytkownika.' });
+      interaction.reply({ embeds: [embedErr], ephemeral: true });
     }
   }
 };

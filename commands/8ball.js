@@ -20,6 +20,7 @@ module.exports = {
       'Nie chcesz wiedzieć'
     ];
     const response = responses[Math.floor(Math.random() * responses.length)];
-    await interaction.reply(response);
+    const embed = interaction.client.createEmbed(interaction.guildId, { description: response });
+    await interaction.reply({ embeds: [embed] });
   }
 };

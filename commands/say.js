@@ -8,10 +8,12 @@ module.exports = {
       option.setName('text').setDescription('Text to send').setRequired(true)),
   async execute(interaction) {
     if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
-      return interaction.reply({ content: 'Missing permission.', ephemeral: true });
+      const embed = interaction.client.createEmbed(interaction.guildId, { description: 'Missing permission.' });
+      return interaction.reply({ embeds: [embed], ephemeral: true });
     }
     const text = interaction.options.getString('text');
-    await interaction.reply({ content: 'Sent!', ephemeral: true });
+    const embed = interaction.client.createEmbed(interaction.guildId, { description: 'Sent!' });
+    await interaction.reply({ embeds: [embed], ephemeral: true });
     await interaction.channel.send(text);
   }
 };

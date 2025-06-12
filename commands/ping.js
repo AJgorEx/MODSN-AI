@@ -7,6 +7,7 @@ module.exports = {
   async execute(interaction) {
     const sent = await interaction.reply({ content: 'Pinging...', fetchReply: true });
     const latency = sent.createdTimestamp - interaction.createdTimestamp;
-    await interaction.editReply(`Pong! **${latency}ms**`);
+    const embed = interaction.client.createEmbed(interaction.guildId, { description: `Pong! **${latency}ms**` });
+    await interaction.editReply({ content: null, embeds: [embed] });
   }
 };

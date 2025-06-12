@@ -7,9 +7,11 @@ module.exports = {
   async execute(interaction) {
     try {
       const reward = interaction.client.economy.work(interaction.user.id);
-      await interaction.reply(`You earned ${reward} coins from work!`);
+      const embed = interaction.client.createEmbed(interaction.guildId, { description: `You earned ${reward} coins from work!` });
+      await interaction.reply({ embeds: [embed] });
     } catch (e) {
-      await interaction.reply({ content: 'You have to wait before working again.', ephemeral: true });
+      const embedErr = interaction.client.createEmbed(interaction.guildId, { description: 'You have to wait before working again.' });
+      await interaction.reply({ embeds: [embedErr], ephemeral: true });
     }
   }
 };

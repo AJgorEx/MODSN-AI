@@ -9,6 +9,7 @@ module.exports = {
     const h = Math.floor(sec / 3600);
     const m = Math.floor((sec % 3600) / 60);
     const s = sec % 60;
-    await interaction.reply(`Uptime: ${h}h ${m}m ${s}s`);
+    const embed = interaction.client.createEmbed(interaction.guildId, { description: `Uptime: ${h}h ${m}m ${s}s` });
+    await interaction.reply({ embeds: [embed] });
   }
 };

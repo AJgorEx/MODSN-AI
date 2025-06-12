@@ -12,6 +12,7 @@ module.exports = {
   async execute(interaction) {
     const sides = interaction.options.getInteger('sides') || 6;
     const result = Math.floor(Math.random() * sides) + 1;
-    await interaction.reply(`You rolled **${result}** (1-${sides})`);
+    const embed = interaction.client.createEmbed(interaction.guildId, { description: `You rolled **${result}** (1-${sides})` });
+    await interaction.reply({ embeds: [embed] });
   }
 };

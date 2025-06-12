@@ -11,12 +11,17 @@ module.exports = {
   async execute(interaction) {
     const target = interaction.options.getUser('user');
     const amount = interaction.options.getInteger('amount');
-    if (target.bot) return interaction.reply({ content: 'Cannot pay bots.', ephemeral: true });
+    if (target.bot) {
+      const embedErr = interaction.client.createEmbed(interaction.guildId, { description: 'Cannot pay bots.' });
+      return interaction.reply({ embeds: [embedErr], ephemeral: true });
+    }
     try {
       interaction.client.economy.transfer(interaction.user.id, target.id, amount);
-      await interaction.reply(`Sent ${amount} coins to ${target.tag}`);
+      const embed = interaction.client.createEmbed(interaction.guildId, { description: `Sent ${amount} coins to ${target.tag}` });
+      await interaction.reply({ embeds: [embed] });
     } catch (e) {
-      await interaction.reply({ content: 'Transaction failed: ' + e.message, ephemeral: true });
+      const embedErr = interaction.client.createEmbed(interaction.guildId, { description: 'Transaction failed: ' + e.message });
+      await interaction.reply({ embeds: [embedErr], ephemeral: true });
     }
   }
 };

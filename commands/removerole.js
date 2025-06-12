@@ -8,12 +8,17 @@ module.exports = {
     .addRoleOption(o => o.setName('role').setDescription('Role').setRequired(true)),
   async execute(interaction) {
     if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageRoles)) {
-      return interaction.reply({ content: 'Missing permission.', ephemeral: true });
+      const embed = interaction.client.createEmbed(interaction.guildId, { description: 'Missing permission.' });
+      return interaction.reply({ embeds: [embed], ephemeral: true });
     }
     const member = interaction.options.getMember('user');
     const role = interaction.options.getRole('role');
-    if (!member || !role) return interaction.reply({ content: 'Invalid user or role.', ephemeral: true });
+    if (!member || !role) {
+      const embedErr = interaction.client.createEmbed(interaction.guildId, { description: 'Invalid user or role.' });
+      return interaction.reply({ embeds: [embedErr], ephemeral: true });
+    }
     await member.roles.remove(role).catch(() => {});
-    await interaction.reply({ content: `Role removed from ${member.user.tag}.`, ephemeral: true });
+    const embed = interaction.client.createEmbed(interaction.guildId, { description: `Role removed from ${member.user.tag}.` });
+    await interaction.reply({ embeds: [embed], ephemeral: true });
   }
 };

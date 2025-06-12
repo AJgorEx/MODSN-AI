@@ -230,6 +230,21 @@ module.exports = function startWebServer(client) {
     res.send('OK');
   });
 
+  app.get('/settings/:guildId', requireAuth, verifyGuildAccess, (req, res) => {
+    const guildId = req.params.guildId;
+    res.json(client.guildSettings.get(guildId));
+  });
+
+  app.post('/settings/:guildId', requireAuth, verifyGuildAccess, (req, res) => {
+    const guildId = req.params.guildId;
+    const { color } = req.body;
+    if (typeof color !== 'string' || !/^#?[0-9a-fA-F]{6}$/.test(color)) {
+      return res.status(400).send('Invalid color');
+    }
+    client.setEmbedColor(guildId, color.startsWith('#') ? color : '#' + color);
+    res.send('OK');
+  });
+
   app.get('/guilds', requireAuth, async (req, res) => {
     try {
       const guilds = await fetchUserGuilds(req);
