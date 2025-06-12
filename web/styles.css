@@ -66,6 +66,14 @@ body {
   line-height: 1.5;
 }
 
+body.no-sidebar {
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "topbar"
+    "main"
+    "footer";
+}
+
 /* Topbar */
 .topbar {
   grid-area: topbar;
