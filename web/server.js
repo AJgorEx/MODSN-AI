@@ -79,8 +79,20 @@ module.exports = function startWebServer(client) {
     next();
   }
 
-  app.get('/me', requireAuth, (req, res) => {
-    res.json(req.session.user || {});
+  app.get('/me', requireAuth, async (req, res) => {
+    try {
+      if (!req.session.user) {
+        const userRes = await fetch('https://discord.com/api/users/@me', {
+          headers: { Authorization: `Bearer ${req.session.accessToken}` }
+        });
+        if (!userRes.ok) throw new Error('Failed to fetch user');
+        req.session.user = await userRes.json();
+      }
+      res.json(req.session.user || {});
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Failed to fetch user');
+    }
   });
 
   app.get('/stats', requireAuth, (req, res) => {
