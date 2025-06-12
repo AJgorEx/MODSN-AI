@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Bot Management</title>
+</head>
+<body>
+  <h1>Bot Management</h1>
+  <form method="POST" action="/message">
+    <div>
+      <label>Admin Token:</label>
+      <input type="password" name="token" required>
+    </div>
+    <div>
+      <label>Channel ID:</label>
+      <input type="text" name="channelId" required>
+    </div>
+    <div>
+      <label>Message:</label>
+      <input type="text" name="message" required>
+    </div>
+    <button type="submit">Send</button>
+  </form>
+</body>
+</html>
