@@ -656,3 +656,27 @@ body.no-sidebar {
 .toast .icon {
   font-size: 1.2rem;
 }
+
+#members {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#members li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+#members li:last-child {
+  border-bottom: none;
+}
+
+#members .avatar {
+  width: 32px;
+  height: 32px;
+  border-width: 2px;
+}

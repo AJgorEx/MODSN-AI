@@ -613,6 +613,22 @@ module.exports = function startWebServer(client) {
     }
   });
 
+  app.post('/dm/:userId', requireAuth, async (req, res) => {
+    const { userId } = req.params;
+    const { message } = req.body;
+    if (typeof message !== 'string' || !message.trim() || message.length > 2000) {
+      return res.status(400).send('Invalid message');
+    }
+    try {
+      const user = await client.users.fetch(userId);
+      await user.send(message);
+      res.send('OK');
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Failed to send DM');
+    }
+  });
+
   app.listen(PORT, () =>
     console.log(`\uD83D\uDD0C Web management listening on port ${PORT}`)
   );
