@@ -33,6 +33,24 @@
   display: none;
   z-index: 10;
 }
+#customEmojiPicker {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  display: none;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  background-color: var(--card-bg-hover);
+  padding: 0.5rem;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  z-index: 10;
+}
+#customEmojiPicker img {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
 .embed-preview {
   margin-top: 1rem;
   border-left: 3px solid var(--primary);
