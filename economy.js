@@ -12,6 +12,8 @@ class EconomySystem {
     try {
       const raw = fs.readFileSync(this.file, 'utf8');
       this.data = JSON.parse(raw);
+      if (typeof this.data.users !== 'object') this.data.users = {};
+      if (!Array.isArray(this.data.shop)) this.data.shop = [];
     } catch (_) {
       this.save();
     }
@@ -36,6 +38,7 @@ class EconomySystem {
   }
 
   addBalance(id, amt, reason = 'earn') {
+    if (amt <= 0) throw new Error('Amount must be positive');
     const user = this.getUser(id);
     user.balance += amt;
     user.transactions.push({ type: reason, amount: amt, ts: Date.now() });
@@ -44,6 +47,7 @@ class EconomySystem {
 
   subtractBalance(id, amt, reason = 'spend') {
     const user = this.getUser(id);
+    if (amt <= 0) throw new Error('Amount must be positive');
     if (user.balance < amt) throw new Error('Insufficient funds');
     user.balance -= amt;
     user.transactions.push({ type: reason, amount: -amt, ts: Date.now() });
@@ -52,6 +56,7 @@ class EconomySystem {
 
   deposit(id, amt) {
     const user = this.getUser(id);
+    if (amt <= 0) throw new Error('Amount must be positive');
     if (user.balance < amt) throw new Error('Insufficient funds');
     user.balance -= amt;
     user.bank += amt;
@@ -61,6 +66,7 @@ class EconomySystem {
 
   withdraw(id, amt) {
     const user = this.getUser(id);
+    if (amt <= 0) throw new Error('Amount must be positive');
     if (user.bank < amt) throw new Error('Insufficient bank funds');
     user.bank -= amt;
     user.balance += amt;
