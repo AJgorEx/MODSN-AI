@@ -1,51 +1,64 @@
 // Load environment variables
 require('dotenv').config();
 
-const { Client, Collection, GatewayIntentBits, Partials } = require('discord.js');
+const {
+  Client,
+  Collection,
+  GatewayIntentBits,
+  Partials,
+  REST,
+  Routes
+} = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 
 const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.MessageContent
-  ],
+  intents: [GatewayIntentBits.Guilds],
   partials: [Partials.Channel]
 });
 
 client.commands = new Collection();
-const prefix = '!';
+const token = process.env.DISCORD_TOKEN;
+const clientId = process.env.CLIENT_ID;
 
 const commandsPath = path.join(__dirname, 'commands');
-fs.readdirSync(commandsPath).forEach(file => {
-  if (file.endsWith('.js')) {
-    const command = require(path.join(commandsPath, file));
-    if (command && command.name && command.execute) {
-      client.commands.set(command.name, command);
+const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+const commands = [];
+
+for (const file of commandFiles) {
+  const command = require(path.join(commandsPath, file));
+  if (command && command.data && command.execute) {
+    client.commands.set(command.data.name, command);
+    commands.push(command.data.toJSON());
+  }
+}
+
+client.once('ready', async () => {
+  console.log(`✅ Logged in as ${client.user.tag}`);
+  const rest = new REST({ version: '10' }).setToken(token);
+  try {
+    await rest.put(Routes.applicationCommands(clientId), { body: commands });
+    console.log('✅ Registered slash commands');
+  } catch (err) {
+    console.error('❌ Failed to register commands', err);
+  }
+});
+
+client.on('interactionCreate', async interaction => {
+  if (!interaction.isChatInputCommand()) return;
+  const command = client.commands.get(interaction.commandName);
+  if (!command) return;
+
+  try {
+    await command.execute(interaction);
+  } catch (error) {
+    console.error(error);
+    if (interaction.replied || interaction.deferred) {
+      await interaction.followUp({ content: '❌ Wystąpił błąd podczas wykonywania komendy.', ephemeral: true });
+    } else {
+      await interaction.reply({ content: '❌ Wystąpił błąd podczas wykonywania komendy.', ephemeral: true });
     }
   }
 });
 
-client.once('ready', () => {
-  console.log(`✅ Logged in as ${client.user.tag}`);
-});
-
-client.on('messageCreate', async message => {
-  if (!message.content.startsWith(prefix) || message.author.bot) return;
-  const args = message.content.slice(prefix.length).trim().split(/ +/);
-  const commandName = args.shift().toLowerCase();
-
-  const command = client.commands.get(commandName);
-  if (!command) return;
-
-  try {
-    await command.execute(message, args);
-  } catch (error) {
-    console.error(error);
-    message.reply('❌ Wystąpił błąd podczas wykonywania komendy.');
-  }
-});
-
-client.login(process.env.DISCORD_TOKEN);
+client.login(token);

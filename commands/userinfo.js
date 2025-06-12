@@ -1,9 +1,12 @@
+const { SlashCommandBuilder } = require('discord.js');
+
 module.exports = {
-  name: 'userinfo',
-  description: 'Wyświetla informacje o użytkowniku',
-  execute(message) {
-    const user = message.author;
-    const member = message.guild.members.cache.get(user.id);
+  data: new SlashCommandBuilder()
+    .setName('userinfo')
+    .setDescription('Wyświetla informacje o użytkowniku'),
+  async execute(interaction) {
+    const user = interaction.user;
+    const member = await interaction.guild.members.fetch(user.id);
     const embed = {
       color: 0x0099ff,
       title: user.tag,
@@ -13,6 +16,6 @@ module.exports = {
         { name: 'Utworzone konto', value: user.createdAt.toDateString(), inline: true }
       ]
     };
-    message.channel.send({ embeds: [embed] });
+    await interaction.reply({ embeds: [embed] });
   }
 };
