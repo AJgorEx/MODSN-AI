@@ -226,6 +226,23 @@ module.exports = function startWebServer(client) {
     }
   });
 
+  app.get('/emojis/:guildId', requireAuth, verifyGuildAccess, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.guildId);
+    if (!guild) return res.status(404).send('Guild not found');
+    try {
+      const emojis = (await guild.emojis.fetch()).map(e => ({
+        id: e.id,
+        name: e.name,
+        animated: e.animated,
+        url: e.url
+      }));
+      res.json(emojis);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Failed to fetch emojis');
+    }
+  });
+
   app.post('/message', requireAuth, async (req, res) => {
     const { channelId, message } = req.body;
     const channel = client.channels.cache.get(channelId);
