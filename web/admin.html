@@ -3,11 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Admin Zone</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body { background: url('https://source.unsplash.com/1600x900/?tech') no-repeat center/cover; }
-    .glass { background: rgba(255,255,255,0.1); backdrop-filter: blur(20px); border-radius: 1rem; border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 4px 30px rgba(0,0,0,0.1); }
-  </style>
+  <link rel="stylesheet" href="styles.css">
   <script>
     async function fetchJSON(url) {
       const r = await fetch(url);
@@ -55,22 +51,25 @@
     });
   </script>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4" style="--accent:#14b8a6;">
-  <div class="glass p-8 max-w-lg w-full text-white">
-    <h1 class="text-2xl font-bold mb-4 text-center text-[var(--accent)]">Admin Zone</h1>
-    <form id="msgForm" class="space-y-4">
-      <div>
-        <select id="guild" class="w-full text-black px-3 py-2 rounded"></select>
+<body style="--accent:#14b8a6;">
+  <div class="glass card">
+    <h1>Admin Zone</h1>
+    <form id="msgForm">
+      <div class="form-group">
+        <label>Guild</label>
+        <select id="guild"></select>
       </div>
-      <div>
-        <select id="channel" class="w-full text-black px-3 py-2 rounded"></select>
+      <div class="form-group">
+        <label>Channel</label>
+        <select id="channel"></select>
       </div>
-      <div>
-        <input type="text" id="message" placeholder="Message" class="w-full px-3 py-2 rounded text-black" required>
+      <div class="form-group">
+        <label>Message</label>
+        <input type="text" id="message" required>
       </div>
-      <button class="w-full py-2 bg-[var(--accent)] text-white rounded">Send</button>
+      <button class="btn" style="margin-top:1rem;">Send</button>
     </form>
-    <a href="/logout" class="block text-center mt-4 text-sm underline">Logout</a>
+    <a href="/logout" class="link">Logout</a>
   </div>
 </body>
 </html>

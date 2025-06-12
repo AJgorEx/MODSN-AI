@@ -3,11 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>User Zone</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body { background: url('https://source.unsplash.com/1600x900/?nature') no-repeat center/cover; }
-    .glass { background: rgba(255,255,255,0.1); backdrop-filter: blur(20px); border-radius: 1rem; border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 4px 30px rgba(0,0,0,0.1); }
-  </style>
+  <link rel="stylesheet" href="styles.css">
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const colorInput = document.getElementById('color');
@@ -21,14 +17,14 @@
     });
   </script>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4" style="--accent:#14b8a6;">
-  <div class="glass p-8 max-w-md w-full text-white">
-    <h1 class="text-2xl font-bold mb-4 text-center text-[var(--accent)]">User Zone</h1>
-    <div class="flex items-center justify-between mb-4">
-      <label class="text-sm">Accent color</label>
-      <input type="color" id="color" class="rounded border-0">
+<body style="--accent:#14b8a6;">
+  <div class="glass card">
+    <h1>User Zone</h1>
+    <div class="form-group">
+      <label>Accent color</label>
+      <input type="color" id="color">
     </div>
-    <a href="/logout" class="block text-center mt-4 text-sm underline">Logout</a>
+    <a href="/logout" class="link">Logout</a>
   </div>
 </body>
 </html>
