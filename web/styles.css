@@ -16,6 +16,14 @@
   --warning: #FEE75C;
   --info: #5b8af0;
 
+  /* Typography */
+  --font-base: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-heading: 'Poppins', sans-serif;
+
+  /* Hero gradient */
+  --hero-bg-start: #1a1a2e;
+  --hero-bg-end: #2a2a3a;
+
   /* Cienie */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -37,7 +45,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-base);
 }
 
 html {
@@ -73,7 +81,7 @@ body {
 }
 
 .topbar h2 {
-  font-family: 'Poppins', sans-serif;
+  font-family: var(--font-heading);
   font-weight: 600;
   color: var(--primary);
   font-size: 1.5rem;
@@ -181,7 +189,7 @@ body {
 .card h1 {
   margin-bottom: 1.5rem;
   color: var(--primary);
-  font-family: 'Poppins', sans-serif;
+  font-family: var(--font-heading);
   font-weight: 600;
   font-size: 1.8rem;
   position: relative;
@@ -268,6 +276,11 @@ body {
 .btn:active {
   transform: translateY(0);
   box-shadow: var(--shadow-sm);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
 .btn i {
@@ -377,7 +390,7 @@ body {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: linear-gradient(135deg, #1a1a2e 0%, #2a2a3a 100%);
+  background: linear-gradient(135deg, var(--hero-bg-start) 0%, var(--hero-bg-end) 100%);
 }
 
 .hero .card {
@@ -502,5 +515,12 @@ body {
 
   .card h1 {
     font-size: 1.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
   }
 }
