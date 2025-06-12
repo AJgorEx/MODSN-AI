@@ -41,6 +41,19 @@
   --transition-slow: 0.5s ease;
 }
 
+body.light-theme {
+  --background: #f5f5f5;
+  --card-bg: #ffffff;
+  --card-bg-hover: #f0f0f0;
+  --text: #222222;
+  --text-secondary: #555555;
+  --text-tertiary: #777777;
+  --border: #cccccc;
+  --border-light: #dddddd;
+  --hero-bg-start: #ffffff;
+  --hero-bg-end: #e8e8e8;
+}
+
 * {
   margin: 0;
   padding: 0;

@@ -29,8 +29,32 @@ async function loadUserInfo() {
   }
 }
 
+function applyTheme(theme) {
+  if (theme === 'light') {
+    document.body.classList.add('light-theme');
+  } else {
+    document.body.classList.remove('light-theme');
+  }
+}
+
+function toggleTheme() {
+  const newTheme = document.body.classList.contains('light-theme') ? 'dark' : 'light';
+  applyTheme(newTheme);
+  localStorage.setItem('theme', newTheme);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  // no animations
+  const saved = localStorage.getItem('theme');
+  if (saved) applyTheme(saved);
+  const nav = document.querySelector('.topbar nav');
+  if (nav) {
+    const btn = document.createElement('button');
+    btn.id = 'themeToggle';
+    btn.className = 'btn btn-outline btn-sm';
+    btn.textContent = 'Theme';
+    btn.addEventListener('click', toggleTheme);
+    nav.appendChild(btn);
+  }
 });
 
 function notify(type, msg) {

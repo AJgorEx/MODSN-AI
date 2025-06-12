@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', async () => {
-  const user = await loadUserInfo();
+  await loadUserInfo();
 
   const stats = await fetchJSON('/stats');
   if (stats)
@@ -7,17 +7,32 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const list = document.getElementById('guilds');
   const invite = document.getElementById('invite');
+  const search = document.getElementById('search');
   const guilds = await fetchJSON('/guilds');
-  if (guilds) {
-    guilds.forEach(g => {
-      const li = document.createElement('li');
-      const link = document.createElement('a');
-      link.textContent = g.name;
-      const isAdmin = g.owner || (BigInt(g.permissions) & 0x8n) === 0x8n;
-      link.href = isAdmin ? `admin.html?guildId=${g.id}` : 'user.html';
-      li.appendChild(link);
-      list.appendChild(li);
-    });
+  let allGuilds = [];
+
+  function render(filter = '') {
+    list.innerHTML = '';
+    const lower = filter.toLowerCase();
+    allGuilds
+      .filter(g => g.name.toLowerCase().includes(lower))
+      .forEach(g => {
+        const li = document.createElement('li');
+        const link = document.createElement('a');
+        link.textContent = g.name;
+        const isAdmin = g.owner || (BigInt(g.permissions) & 0x8n) === 0x8n;
+        link.href = isAdmin ? `admin.html?guildId=${g.id}` : 'user.html';
+        li.appendChild(link);
+        list.appendChild(li);
+      });
+  }
+
+  if (Array.isArray(guilds)) {
+    allGuilds = guilds;
+    render();
+    if (search) {
+      search.addEventListener('input', () => render(search.value));
+    }
     invite.innerHTML = '<a class="btn" href="/invite">Add Bot to Server</a>';
   }
 });
