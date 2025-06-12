@@ -5,34 +5,6 @@
   <title>Select Server</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
-  <script>
-    async function fetchJSON(url){
-      const r=await fetch(url,{credentials:'include'});
-      return r.ok? r.json():{};
-    }
-    document.addEventListener('DOMContentLoaded',async()=>{
-      const user=await fetchJSON('/me');
-      document.getElementById('username').textContent=user.username;
-      const avatarUrl = user.avatar
-        ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`
-        : `https://cdn.discordapp.com/embed/avatars/${(parseInt(user.discriminator)||0)%5}.png`;
-      document.getElementById('avatar').src = avatarUrl;
-
-      const stats = await fetchJSON('/stats');
-      document.getElementById('stats').textContent = `Bot on ${stats.botGuilds} servers`;
-
-      const list=document.getElementById('guilds');
-      const guilds=await fetchJSON('/guilds');
-      guilds.forEach(g=>{
-        const li=document.createElement('li');
-        const link=document.createElement('a');
-        link.textContent=g.name;
-        link.href=`admin.html?guildId=${g.id}`;
-        li.appendChild(link);
-        list.appendChild(li);
-      });
-    });
-  </script>
 </head>
 <body>
   <header class="topbar">
@@ -55,9 +27,10 @@
     <div class="card tilt">
       <h1>Select server</h1>
       <ul id="guilds"></ul>
+      <div id="invite"></div>
     </div>
   </main>
   <footer class="footer">Panel MODSN.AI &copy; 2024</footer>
-  <script src="script.js"></script>
+  <script src="servers.js"></script>
 </body>
 </html>
