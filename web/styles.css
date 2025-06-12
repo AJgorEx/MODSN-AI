@@ -4,7 +4,8 @@
   --accent: #4e9aff;
   --accent-alt: #ff3366;
   --text: #fafafa;
-  --font: 'Poppins', 'Inter', sans-serif;
+  --font-body: 'Roboto', 'Inter', sans-serif;
+  --font-heading: 'Montserrat', 'Poppins', sans-serif;
   --mono-font: 'Fira Code', monospace;
 }
 
@@ -15,7 +16,7 @@
 }
 
 body {
-  font-family: var(--font);
+  font-family: var(--font-body);
   background: linear-gradient(135deg, #1f1f1f, #000);
   color: var(--text);
   min-height: 100vh;
@@ -25,13 +26,16 @@ body {
   scroll-behavior: smooth;
 }
 
-a {
+button.link {
   color: var(--accent);
   text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
   transition: color 0.3s;
 }
 
-a:hover {
+button.link:hover {
   color: var(--accent-alt);
 }
 
@@ -41,7 +45,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font);
+  font-family: var(--font-heading);
   font-weight: 600;
   margin-bottom: 0.5rem;
 }
@@ -55,7 +59,8 @@ p {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
+  padding: 1.5rem 2.5rem;
+  font-size: 1.1rem;
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px) saturate(180%);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -69,8 +74,8 @@ nav {
 }
 
 .sidebar {
-  width: 220px;
-  padding: 1rem;
+  width: 260px;
+  padding: 1.5rem;
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px) saturate(180%);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -78,6 +83,7 @@ nav {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 1rem;
 }
 
 .main {
@@ -109,6 +115,7 @@ nav {
   color: #fff;
   border-radius: 0.5rem;
   text-decoration: none;
+  border: none;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   transition: background 0.3s, transform 0.2s;
 }
@@ -119,7 +126,7 @@ nav {
 }
 
 button {
-  font-family: var(--font);
+  font-family: var(--font-body);
   cursor: pointer;
   border: none;
   background: none;
@@ -135,14 +142,17 @@ button.btn:active {
   transform: translateY(0);
 }
 
-.link {
+button.link {
   color: var(--accent);
   text-decoration: none;
   margin: 0.25rem 0;
+  background: none;
+  border: none;
+  cursor: pointer;
   transition: color 0.3s;
 }
 
-.link:hover {
+button.link:hover {
   color: var(--accent-alt);
   text-decoration: underline;
 }
@@ -206,16 +216,19 @@ ul {
   padding: 0;
 }
 
-ul li a {
+ul li button {
   display: block;
   padding: 0.5rem;
   color: var(--text);
   border-radius: 0.25rem;
-  text-decoration: none;
+  background: none;
+  border: none;
+  text-align: left;
+  width: 100%;
   transition: background 0.3s;
 }
 
-ul li a:hover {
+ul li button:hover {
   background: rgba(255, 255, 255, 0.1);
 }
 
@@ -230,7 +243,7 @@ ul li a:hover {
 
 @media (max-width: 768px) {
   .sidebar {
-    width: 180px;
+    width: 200px;
   }
 }
 
