@@ -428,6 +428,19 @@ module.exports = function startWebServer(client) {
     }
   });
 
+  app.post('/economy/gamble', requireAuth, async (req, res) => {
+    try {
+      const id = await getUserId(req);
+      const amt = parseInt(req.body.amount, 10);
+      const reward = client.economy.gamble(id, amt);
+      const user = client.economy.getUser(id);
+      res.json({ balance: user.balance, bank: user.bank, reward });
+    } catch (err) {
+      console.error(err);
+      res.status(400).send(err.message);
+    }
+  });
+
   app.listen(PORT, () =>
     console.log(`\uD83D\uDD0C Web management listening on port ${PORT}`)
   );
