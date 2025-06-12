@@ -13,7 +13,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       const li = document.createElement('li');
       const link = document.createElement('a');
       link.textContent = g.name;
-      link.href = `admin.html?guildId=${g.id}`;
+      const isAdmin = g.owner || (BigInt(g.permissions) & 0x8n) === 0x8n;
+      link.href = isAdmin ? `admin.html?guildId=${g.id}` : 'user.html';
       li.appendChild(link);
       list.appendChild(li);
     });

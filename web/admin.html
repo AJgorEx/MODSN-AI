@@ -44,6 +44,16 @@
       const commandsLink = document.getElementById('commandsLink');
       const rolesLink = document.getElementById('rolesLink');
       const roleManagerLink = document.getElementById('roleManagerLink');
+
+      if (guildId) {
+        const guilds = await fetchJSON('/guilds');
+        const guild = guilds && guilds.find(g => g.id === guildId);
+        const isAdmin = guild && (guild.owner || (BigInt(guild.permissions) & 0x8n) === 0x8n);
+        if (!isAdmin) {
+          window.location.replace('user.html');
+          return;
+        }
+      }
       if (commandsLink) {
         if (guildId) {
           commandsLink.href = `commands.html?guildId=${guildId}`;
