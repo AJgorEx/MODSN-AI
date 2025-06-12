@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Admin panel for MODSN.AI">
   <title>Admin Zone</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
@@ -29,22 +31,15 @@
         document.getElementById('stats').textContent = `Bot on ${stats.botGuilds} servers`;
 
       const guildSelect = document.getElementById('guild');
+      const guildGroup = document.getElementById('guildGroup');
       const channelSelect = document.getElementById('channel');
       const form = document.getElementById('msgForm');
       const params = new URLSearchParams(window.location.search);
-      const pre = params.get('guildId');
-      const guilds = await fetchJSON('/guilds');
-      if (guilds)
-        guilds.forEach(g => {
-          const opt = document.createElement('option');
-          opt.value = g.id;
-          opt.textContent = g.name;
-          guildSelect.appendChild(opt);
-        });
-      if (pre) guildSelect.value = pre;
-      guildSelect.addEventListener('change', async () => {
+      const guildId = params.get('guildId');
+
+      const loadChannels = async (id) => {
         channelSelect.innerHTML = '';
-        const channels = await fetchJSON(`/channels/${guildSelect.value}`);
+        const channels = await fetchJSON(`/channels/${id}`);
         if (channels)
           channels.forEach(c => {
             const opt = document.createElement('option');
@@ -52,8 +47,23 @@
             opt.textContent = c.name;
             channelSelect.appendChild(opt);
           });
-      });
-      guildSelect.dispatchEvent(new Event('change'));
+      };
+
+      if (guildId) {
+        guildGroup.style.display = 'none';
+        await loadChannels(guildId);
+      } else {
+        const guilds = await fetchJSON('/guilds');
+        if (guilds)
+          guilds.forEach(g => {
+            const opt = document.createElement('option');
+            opt.value = g.id;
+            opt.textContent = g.name;
+            guildSelect.appendChild(opt);
+          });
+        guildSelect.addEventListener('change', () => loadChannels(guildSelect.value));
+        guildSelect.dispatchEvent(new Event('change'));
+      }
 
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -94,7 +104,7 @@
     <div class="card tilt">
       <h1>Admin Zone</h1>
       <form id="msgForm">
-        <div class="form-group">
+        <div class="form-group" id="guildGroup">
           <label>Guild</label>
           <select id="guild"></select>
         </div>
