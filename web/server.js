@@ -24,7 +24,7 @@ module.exports = function startWebServer(client) {
   // Cookie parser MUST come before the session middleware
   app.use(cookieParser(process.env.SESSION_SECRET));
   const csp = helmet.contentSecurityPolicy.getDefaultDirectives();
-  csp["script-src"].push("'unsafe-inline'");
+  csp["script-src"].push("'unsafe-inline'", 'https://cdn.jsdelivr.net');
   csp["img-src"].push('https://cdn.discordapp.com');
   app.use(
     helmet({
