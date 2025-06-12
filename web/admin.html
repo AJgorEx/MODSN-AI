@@ -8,18 +8,25 @@
   <script>
     async function fetchJSON(url) {
       const r = await fetch(url, { credentials: 'include' });
-      return r.ok ? r.json() : {};
+      if (!r.ok) {
+        console.error('Failed to fetch', url, r.status);
+        return null;
+      }
+      return r.json();
     }
     document.addEventListener('DOMContentLoaded', async () => {
       const user = await fetchJSON('/me');
-      document.getElementById('username').textContent = user.username;
-      const avatarUrl = user.avatar
-        ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`
-        : `https://cdn.discordapp.com/embed/avatars/${(parseInt(user.discriminator)||0)%5}.png`;
-      document.getElementById('avatar').src = avatarUrl;
+      if (user) {
+        document.getElementById('username').textContent = user.username;
+        const avatarUrl = user.avatar
+          ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`
+          : `https://cdn.discordapp.com/embed/avatars/${(parseInt(user.discriminator) || 0) % 5}.png`;
+        document.getElementById('avatar').src = avatarUrl;
+      }
 
       const stats = await fetchJSON('/stats');
-      document.getElementById('stats').textContent = `Bot on ${stats.botGuilds} servers`;
+      if (stats)
+        document.getElementById('stats').textContent = `Bot on ${stats.botGuilds} servers`;
 
       const guildSelect = document.getElementById('guild');
       const channelSelect = document.getElementById('channel');
@@ -27,22 +34,24 @@
       const params = new URLSearchParams(window.location.search);
       const pre = params.get('guildId');
       const guilds = await fetchJSON('/guilds');
-      guilds.forEach(g => {
-        const opt = document.createElement('option');
-        opt.value = g.id;
-        opt.textContent = g.name;
-        guildSelect.appendChild(opt);
-      });
+      if (guilds)
+        guilds.forEach(g => {
+          const opt = document.createElement('option');
+          opt.value = g.id;
+          opt.textContent = g.name;
+          guildSelect.appendChild(opt);
+        });
       if (pre) guildSelect.value = pre;
       guildSelect.addEventListener('change', async () => {
         channelSelect.innerHTML = '';
         const channels = await fetchJSON(`/channels/${guildSelect.value}`);
-        channels.forEach(c => {
-          const opt = document.createElement('option');
-          opt.value = c.id;
-          opt.textContent = c.name;
-          channelSelect.appendChild(opt);
-        });
+        if (channels)
+          channels.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c.id;
+            opt.textContent = c.name;
+            channelSelect.appendChild(opt);
+          });
       });
       guildSelect.dispatchEvent(new Event('change'));
 

@@ -149,11 +149,15 @@ module.exports = function startWebServer(client) {
   app.get('/channels/:guildId', requireAuth, async (req, res) => {
     const guild = client.guilds.cache.get(req.params.guildId);
     if (!guild) return res.status(404).send('Guild not found');
-    await guild.channels.fetch();
-    const channels = guild.channels.cache
-      .filter(ch => ch.isTextBased())
-      .map(ch => ({ id: ch.id, name: ch.name }));
-    res.json(channels);
+    try {
+      const channels = (await guild.channels.fetch())
+        .filter(ch => ch.isTextBased())
+        .map(ch => ({ id: ch.id, name: ch.name }));
+      res.json(channels);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Failed to fetch channels');
+    }
   });
 
   app.post('/message', requireAuth, async (req, res) => {
