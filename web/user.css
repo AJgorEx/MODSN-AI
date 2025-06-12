@@ -1,0 +1,38 @@
+.user-grid {
+  display: grid;
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+@media (min-width: 700px) {
+  .user-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .settings-card {
+    grid-column: span 2;
+  }
+}
+
+.profile-card {
+  text-align: center;
+}
+
+.profile-card #avatar {
+  width: 120px;
+  height: 120px;
+}
+
+.economy-card .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.economy-card .actions input {
+  flex: 1 1 80px;
+}
+
+.economy-card .actions .btn {
+  flex: 1 1 auto;
+}

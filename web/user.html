@@ -8,6 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Roboto+Slab:wght@600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="user.css">
   <link rel="stylesheet" href="embed.css">
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
@@ -22,28 +23,29 @@
       <a href="servers.html" class="link">Servers</a>
     </nav>
   </header>
-  <div class="card tilt">
+  <main class="user-grid">
+  <div class="card tilt profile-card">
     <h1>User Zone</h1>
     <img id="avatar" class="avatar" src="" alt="avatar">
     <p id="username"></p>
     <a href="/logout" class="link">Logout</a>
   </div>
-  <div class="card tilt">
+  <div class="card tilt economy-card">
     <h2>Economy</h2>
     <p>Wallet: <span id="wallet">0</span> coins</p>
     <p>Bank: <span id="bank">0</span> coins</p>
-    <div>
+    <div class="actions">
       <input id="amount" type="number" min="1" value="0">
       <button id="depositBtn" class="btn btn-sm" type="button">Deposit</button>
       <button id="withdrawBtn" class="btn btn-sm" type="button">Withdraw</button>
     </div>
-    <div style="margin-top: 0.5rem;">
+    <div class="actions">
       <button id="dailyBtn" class="btn btn-sm" type="button">Claim Daily</button>
       <button id="workBtn" class="btn btn-sm" type="button">Work</button>
       <button id="gambleBtn" class="btn btn-sm" type="button">Gamble</button>
     </div>
   </div>
-  <div class="card tilt">
+  <div class="card tilt settings-card">
     <h2>Settings</h2>
     <div class="form-group">
       <label for="notifToggle">Enable Notifications</label>
@@ -79,6 +81,7 @@
     </div>
     <button id="saveSettingsBtn" class="btn btn-sm" type="button">Save Settings</button>
   </div>
+  </main>
   <div id="notifications" class="notifications"></div>
   <script src="script.js"></script>
   <script src="economy.js"></script>
