@@ -74,7 +74,6 @@ module.exports = function startWebServer(client) {
   app.get('/login', (req, res) => {
     const state = crypto.randomBytes(16).toString('hex');
     req.session.oauthState = state;
-    // Debug information to help verify session state persistence
     console.log('[LOGIN]', {
       sessionId: req.session.id,
       oauthState: req.session.oauthState
@@ -86,7 +85,9 @@ module.exports = function startWebServer(client) {
       scope: 'identify guilds',
       state
     });
-    res.redirect(`https://discord.com/api/oauth2/authorize?${params.toString()}`);
+    req.session.save(() => {
+      res.redirect(`https://discord.com/api/oauth2/authorize?${params.toString()}`);
+    });
   });
 
   app.get('/callback', async (req, res) => {
@@ -132,7 +133,9 @@ module.exports = function startWebServer(client) {
         headers: { Authorization: `Bearer ${token.access_token}` }
       });
       req.session.user = await userRes.json();
-      res.redirect('/servers.html');
+      req.session.save(() => {
+        res.redirect('/servers.html');
+      });
     } catch (err) {
       console.error(err);
       res.status(500).send('OAuth failed');
