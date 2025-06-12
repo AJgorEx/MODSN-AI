@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Select Server</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    async function fetchJSON(url){const r=await fetch(url);return r.ok? r.json():[];}
+    document.addEventListener('DOMContentLoaded',async()=>{
+      const user=await fetchJSON('/me');
+      document.getElementById('username').textContent=user.username;
+      document.getElementById('avatar').src=`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`;
+
+      const stats = await fetchJSON('/stats');
+      document.getElementById('stats').textContent = `Bot on ${stats.botGuilds} servers`;
+
+      const list=document.getElementById('guilds');
+      const guilds=await fetchJSON('/guilds');
+      guilds.forEach(g=>{
+        const li=document.createElement('li');
+        const link=document.createElement('a');
+        link.textContent=g.name;
+        link.href=`admin.html?guildId=${g.id}`;
+        li.appendChild(link);
+        list.appendChild(li);
+      });
+    });
+  </script>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="user-info">
+      <img id="avatar" class="avatar" src="" alt="avatar">
+      <div id="username"></div>
+      <p id="stats"></p>
+    </div>
+    <nav>
+      <a href="/logout" class="link">Logout</a>
+    </nav>
+  </div>
+  <main class="main">
+    <div class="glass card">
+      <h1>Select server</h1>
+      <ul id="guilds"></ul>
+    </div>
+  </main>
+</body>
+</html>

@@ -13,13 +13,13 @@
 
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
+  font-family: 'Poppins', system-ui, sans-serif;
   background: radial-gradient(circle at top left, #1f2937 0%, #000 100%);
   color: var(--text);
   min-height: 100vh;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;
+  justify-content: flex-start;
   padding: 1rem;
 }
 
@@ -55,7 +55,7 @@ h1 {
   display: block;
   width: 100%;
   text-align: center;
-  transition: filter .2s;
+  transition: filter .2s, background-color .3s;
 }
 
 .btn:hover {
@@ -91,4 +91,40 @@ select {
 
 .link:hover {
   color: var(--accent);
+}
+
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: 220px;
+  background: var(--bg-secondary);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform .3s ease;
+}
+
+.main {
+  margin-left: 220px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  transition: margin-left .3s ease;
+}
+
+.avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  margin-bottom: .5rem;
+}
+
+.user-info {
+  text-align: center;
+  margin-bottom: 2rem;
 }

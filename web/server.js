@@ -3,6 +3,7 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const path = require('path');
 const crypto = require('crypto');
+const helmet = require('helmet');
 
 module.exports = function startWebServer(client) {
   const app = express();
@@ -15,6 +16,7 @@ module.exports = function startWebServer(client) {
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json());
   app.use(cookieParser());
+  app.use(helmet());
   app.use(session({
     secret: process.env.SESSION_SECRET || 'super-secret',
     resave: false,
@@ -57,7 +59,11 @@ module.exports = function startWebServer(client) {
       const token = await tokenRes.json();
       if (!token.access_token) return res.status(401).send('Auth failed');
       req.session.accessToken = token.access_token;
-      res.redirect('/admin.html');
+      const userRes = await fetch('https://discord.com/api/users/@me', {
+        headers: { Authorization: `Bearer ${token.access_token}` }
+      });
+      req.session.user = await userRes.json();
+      res.redirect('/servers.html');
     } catch (err) {
       console.error(err);
       res.status(500).send('OAuth failed');
@@ -72,6 +78,14 @@ module.exports = function startWebServer(client) {
     if (!req.session.accessToken) return res.status(401).send('Unauthorized');
     next();
   }
+
+  app.get('/me', requireAuth, (req, res) => {
+    res.json(req.session.user || {});
+  });
+
+  app.get('/stats', requireAuth, (req, res) => {
+    res.json({ botGuilds: client.guilds.cache.size });
+  });
 
   app.get('/guilds', requireAuth, async (req, res) => {
     try {
@@ -102,6 +116,9 @@ module.exports = function startWebServer(client) {
     const { channelId, message } = req.body;
     const channel = client.channels.cache.get(channelId);
     if (!channel) return res.status(400).send('Channel not found');
+    if (typeof message !== 'string' || message.length === 0 || message.length > 2000) {
+      return res.status(400).send('Invalid message');
+    }
     try {
       await channel.send(message);
       res.send('Message sent');
