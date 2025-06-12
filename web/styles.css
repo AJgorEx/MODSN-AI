@@ -195,6 +195,9 @@ body.no-sidebar {
 }
 
 .card h1 {
+  margin-bottom: 1rem;
+  color: var(--text);
+  text-align: center;
   margin-bottom: 1.5rem;
   color: var(--primary);
   font-family: var(--font-heading);
@@ -207,6 +210,9 @@ body.no-sidebar {
 
 /* Links */
 .link {
+  font-family: poppins, sans-serif;
+  font-weight: 500;
+  text-align: center;
   color: var(--text-secondary);
   text-decoration: none;
   transition: all var(--transition-fast);
@@ -263,8 +269,6 @@ body.no-sidebar {
 
 .btn:hover {
   background-color: var(--primary-dark);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
 }
 
 .btn:hover::after {
@@ -354,17 +358,25 @@ body.no-sidebar {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  text-align: center;
 }
 
 #guilds li {
   transition: transform var(--transition-fast);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  background-color: var(--card-bg);
 }
 
 #guilds li:hover {
-  transform: translateX(5px);
+  transform: translateY(-5px);
 }
 
 #guilds a {
+  font-family: poppins, sans-serif;
+  font-weight: 500;
   color: var(--text);
   text-decoration: none;
   padding: 0.875rem 1rem;
@@ -494,4 +506,23 @@ body.no-sidebar {
     animation: none !important;
     transition: none !important;
   }
+}
+#invite{
+  margin-bottom: 5px;
+}
+.note{
+  margin-top: 15px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-fast);
+  font-family: poppins, sans-serif;
+  font-weight: 500;
+  text-align: center;
+  margin-top: 5%;
 }
