@@ -6,6 +6,7 @@ module.exports = {
     .setDescription('Flips a coin'),
   async execute(interaction) {
     const result = Math.random() < 0.5 ? 'Heads' : 'Tails';
-    await interaction.reply(result);
+    const embed = interaction.client.createEmbed(interaction.guildId, { description: result });
+    await interaction.reply({ embeds: [embed] });
   }
 };

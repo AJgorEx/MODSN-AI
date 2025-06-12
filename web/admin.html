@@ -38,6 +38,8 @@
       const embedTimestamp = document.getElementById('embedTimestamp');
       const embedFields = document.getElementById('embedFields');
       const descPreview = document.getElementById('descPreview');
+      const defaultColor = document.getElementById('defaultColor');
+      const saveSettings = document.getElementById('saveSettings');
       const params = new URLSearchParams(window.location.search);
       const guildId = params.get('guildId');
       const commandsLink = document.getElementById('commandsLink');
@@ -81,6 +83,31 @@
         } else {
           economyLink.style.display = 'none';
         }
+      }
+
+      if (guildId && defaultColor) {
+        try {
+          const settings = await fetchJSON(`/settings/${guildId}`);
+          if (settings && settings.color) defaultColor.value = settings.color;
+        } catch (_) {}
+        if (saveSettings) {
+          saveSettings.addEventListener('click', async () => {
+            try {
+              const res = await fetch(`/settings/${guildId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ color: defaultColor.value })
+              });
+              const text = await res.text();
+              if (res.ok) notify('success', text); else notify('error', text);
+            } catch (err) {
+              notify('error', err.message);
+            }
+          });
+        }
+      } else if (defaultColor && saveSettings) {
+        defaultColor.disabled = true;
+        saveSettings.disabled = true;
       }
 
       const loadChannels = async (id) => {
@@ -448,8 +475,16 @@
           </div>
         </div>
         <div id="embedPreview" class="embed-preview"></div>
-        <button class="btn" style="margin-top:1rem;">Send Embed</button>
+      <button class="btn" style="margin-top:1rem;">Send Embed</button>
       </form>
+    </div>
+    <div class="card tilt" style="margin-top:2rem;">
+      <h2>Bot Settings</h2>
+      <div class="form-group">
+        <label>Default Embed Color</label>
+        <input type="color" id="defaultColor" value="#5865F2">
+      </div>
+      <button id="saveSettings" class="btn" style="margin-top:1rem;">Save Settings</button>
     </div>
   </main>
   <div id="notifications" class="notifications"></div>

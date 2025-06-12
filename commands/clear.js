@@ -8,13 +8,16 @@ module.exports = {
       option.setName('amount').setDescription('1-100').setRequired(true)),
   async execute(interaction) {
     if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) {
-      return interaction.reply({ content: 'Missing permission.', ephemeral: true });
+      const embed = interaction.client.createEmbed(interaction.guildId, { description: 'Missing permission.' });
+      return interaction.reply({ embeds: [embed], ephemeral: true });
     }
     let amount = interaction.options.getInteger('amount');
     if (amount < 1 || amount > 100) {
-      return interaction.reply({ content: 'Enter a number between 1 and 100.', ephemeral: true });
+      const embedErr = interaction.client.createEmbed(interaction.guildId, { description: 'Enter a number between 1 and 100.' });
+      return interaction.reply({ embeds: [embedErr], ephemeral: true });
     }
     await interaction.channel.bulkDelete(amount, true);
-    await interaction.reply({ content: `Deleted ${amount} messages.`, ephemeral: true });
+    const embed = interaction.client.createEmbed(interaction.guildId, { description: `Deleted ${amount} messages.` });
+    await interaction.reply({ embeds: [embed], ephemeral: true });
   }
 };

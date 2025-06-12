@@ -6,6 +6,13 @@ module.exports = {
     .setDescription('Shows your wallet and bank balance'),
   async execute(interaction) {
     const user = interaction.client.economy.getUser(interaction.user.id);
-    await interaction.reply(`Wallet: ${user.balance} coins | Bank: ${user.bank} coins`);
+    const embed = interaction.client.createEmbed(interaction.guildId, {
+      title: 'Your Balance',
+      fields: [
+        { name: 'Wallet', value: `${user.balance} coins`, inline: true },
+        { name: 'Bank', value: `${user.bank} coins`, inline: true }
+      ]
+    });
+    await interaction.reply({ embeds: [embed] });
   }
 };

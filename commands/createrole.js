@@ -10,21 +10,25 @@ module.exports = {
       o.setName('color').setDescription('Hex color, optional')),
   async execute(interaction) {
     if (!interaction.member.permissions.has(PermissionsBitField.Flags.ManageRoles)) {
-      return interaction.reply({ content: 'Missing permission.', ephemeral: true });
+      const embed = interaction.client.createEmbed(interaction.guildId, { description: 'Missing permission.' });
+      return interaction.reply({ embeds: [embed], ephemeral: true });
     }
     const name = interaction.options.getString('name');
     let color = interaction.options.getString('color');
     if (color) {
       if (!/^#?[0-9A-Fa-f]{6}$/.test(color)) {
-        return interaction.reply({ content: 'Invalid color.', ephemeral: true });
+        const embedErr = interaction.client.createEmbed(interaction.guildId, { description: 'Invalid color.' });
+        return interaction.reply({ embeds: [embedErr], ephemeral: true });
       }
       if (!color.startsWith('#')) color = `#${color}`;
     }
     try {
       const role = await interaction.guild.roles.create({ name, color });
-      await interaction.reply({ content: `Created role ${role.name}.`, ephemeral: true });
+      const embed = interaction.client.createEmbed(interaction.guildId, { description: `Created role ${role.name}.` });
+      await interaction.reply({ embeds: [embed], ephemeral: true });
     } catch (_) {
-      await interaction.reply({ content: 'Failed to create role.', ephemeral: true });
+      const embedErr2 = interaction.client.createEmbed(interaction.guildId, { description: 'Failed to create role.' });
+      await interaction.reply({ embeds: [embedErr2], ephemeral: true });
     }
   }
 };

@@ -8,6 +8,7 @@ module.exports = {
     const commands = interaction.client.commands
       .map(cmd => `**/${cmd.data.name}** - ${cmd.data.description}`)
       .join('\n');
-    await interaction.reply(`Dostępne komendy:\n${commands}`);
+    const embed = interaction.client.createEmbed(interaction.guildId, { description: `Dostępne komendy:\n${commands}` });
+    await interaction.reply({ embeds: [embed] });
   }
 };

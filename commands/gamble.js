@@ -10,13 +10,17 @@ module.exports = {
     const amount = interaction.options.getInteger('amount');
     try {
       const reward = interaction.client.economy.gamble(interaction.user.id, amount);
+      let desc = '';
       if (reward > 0) {
-        await interaction.reply(`You won and gained ${reward} coins!`);
+        desc = `You won and gained ${reward} coins!`;
       } else {
-        await interaction.reply(`You lost ${amount} coins.`);
+        desc = `You lost ${amount} coins.`;
       }
+      const embed = interaction.client.createEmbed(interaction.guildId, { description: desc });
+      await interaction.reply({ embeds: [embed] });
     } catch (e) {
-      await interaction.reply({ content: 'Gamble failed: ' + e.message, ephemeral: true });
+      const embedErr = interaction.client.createEmbed(interaction.guildId, { description: 'Gamble failed: ' + e.message });
+      await interaction.reply({ embeds: [embedErr], ephemeral: true });
     }
   }
 };

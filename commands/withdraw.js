@@ -10,9 +10,11 @@ module.exports = {
     const amount = interaction.options.getInteger('amount');
     try {
       interaction.client.economy.withdraw(interaction.user.id, amount);
-      await interaction.reply(`Withdrew ${amount} coins from your bank.`);
+      const embed = interaction.client.createEmbed(interaction.guildId, { description: `Withdrew ${amount} coins from your bank.` });
+      await interaction.reply({ embeds: [embed] });
     } catch (e) {
-      await interaction.reply({ content: 'Withdraw failed: ' + e.message, ephemeral: true });
+      const embedErr = interaction.client.createEmbed(interaction.guildId, { description: 'Withdraw failed: ' + e.message });
+      await interaction.reply({ embeds: [embedErr], ephemeral: true });
     }
   }
 };

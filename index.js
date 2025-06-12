@@ -6,6 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const startWebServer = require('./web/server');
 const EconomySystem = require('./economy');
+const guildSettings = require('./guildSettings');
 
 const configPath = path.join(__dirname, 'commands-config.json');
 let commandStatus = {};
@@ -37,6 +38,18 @@ client.isCommandEnabled = function (guildId, command) {
   const guildCfg = client.commandStatus.guilds[guildId] || {};
   if (typeof guildCfg[command] !== 'undefined') return guildCfg[command];
   return client.commandStatus.default[command] !== false;
+};
+
+client.guildSettings = guildSettings;
+client.getEmbedColor = function (guildId) {
+  const color = guildSettings.get(guildId).color || '#5865F2';
+  return parseInt(color.replace('#', ''), 16);
+};
+client.setEmbedColor = function (guildId, color) {
+  guildSettings.set(guildId, { color });
+};
+client.createEmbed = function (guildId, data = {}) {
+  return { color: this.getEmbedColor(guildId), ...data };
 };
 
 const commandsPath = path.join(__dirname, 'commands');

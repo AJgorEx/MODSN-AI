@@ -7,11 +7,16 @@ module.exports = {
     .addUserOption(o => o.setName('user').setDescription('User to unmute').setRequired(true)),
   async execute(interaction) {
     if (!interaction.member.permissions.has(PermissionsBitField.Flags.ModerateMembers)) {
-      return interaction.reply({ content: 'Missing permission.', ephemeral: true });
+      const embed = interaction.client.createEmbed(interaction.guildId, { description: 'Missing permission.' });
+      return interaction.reply({ embeds: [embed], ephemeral: true });
     }
     const member = interaction.options.getMember('user');
-    if (!member) return interaction.reply({ content: 'User not found.', ephemeral: true });
+    if (!member) {
+      const embedErr = interaction.client.createEmbed(interaction.guildId, { description: 'User not found.' });
+      return interaction.reply({ embeds: [embedErr], ephemeral: true });
+    }
     await member.timeout(null).catch(() => {});
-    await interaction.reply({ content: `Unmuted ${member.user.tag}.`, ephemeral: true });
+    const embed = interaction.client.createEmbed(interaction.guildId, { description: `Unmuted ${member.user.tag}.` });
+    await interaction.reply({ embeds: [embed], ephemeral: true });
   }
 };

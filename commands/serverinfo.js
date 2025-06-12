@@ -6,6 +6,12 @@ module.exports = {
     .setDescription('Displays information about the server'),
   async execute(interaction) {
     const { guild } = interaction;
-    await interaction.reply(`Server name: ${guild.name}\nMembers: ${guild.memberCount}`);
+    const embed = interaction.client.createEmbed(interaction.guildId, {
+      title: guild.name,
+      fields: [
+        { name: 'Members', value: String(guild.memberCount), inline: true }
+      ]
+    });
+    await interaction.reply({ embeds: [embed] });
   }
 };
