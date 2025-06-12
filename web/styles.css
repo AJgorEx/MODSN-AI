@@ -4,7 +4,8 @@
   --accent: #4e9aff;
   --accent-alt: #ff3366;
   --text: #fafafa;
-  --font: 'Poppins', sans-serif;
+  --font: 'Poppins', 'Inter', sans-serif;
+  --mono-font: 'Fira Code', monospace;
 }
 
 * {
@@ -24,6 +25,32 @@ body {
   scroll-behavior: smooth;
 }
 
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+a:hover {
+  color: var(--accent-alt);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+p {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
 .topbar {
   display: flex;
   justify-content: space-between;
@@ -33,6 +60,12 @@ body {
   backdrop-filter: blur(10px) saturate(180%);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .sidebar {
@@ -72,7 +105,7 @@ body {
   display: inline-block;
   padding: 0.5rem 1rem;
   margin-top: 1rem;
-  background: var(--accent);
+  background: linear-gradient(135deg, var(--accent), var(--accent-alt));
   color: #fff;
   border-radius: 0.5rem;
   text-decoration: none;
@@ -81,8 +114,25 @@ body {
 }
 
 .btn:hover {
-  background: var(--accent-alt);
+  filter: brightness(1.1);
   transform: translateY(-2px);
+}
+
+button {
+  font-family: var(--font);
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+input,
+select,
+button {
+  font-size: 1rem;
+}
+
+button.btn:active {
+  transform: translateY(0);
 }
 
 .link {
@@ -141,6 +191,14 @@ body {
   border-radius: 0.25rem;
   background: #2a2a2a;
   color: var(--text);
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  background: #333;
+  box-shadow: 0 0 0 2px var(--accent-alt);
+  outline: none;
 }
 
 ul {
@@ -190,4 +248,9 @@ ul li a:hover {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
 }
