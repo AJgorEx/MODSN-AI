@@ -19,6 +19,11 @@
       const guildGroup = document.getElementById('guildGroup');
       const channelSelect = document.getElementById('channel');
       const form = document.getElementById('msgForm');
+      const embedForm = document.getElementById('embedForm');
+      const emojiSelect = document.getElementById('emoji');
+      const embedTitle = document.getElementById('embedTitle');
+      const embedDescription = document.getElementById('embedDescription');
+      const embedColor = document.getElementById('embedColor');
       const params = new URLSearchParams(window.location.search);
       const guildId = params.get('guildId');
       const commandsLink = document.getElementById('commandsLink');
@@ -72,6 +77,27 @@
         alert(await res.text());
         form.reset();
       });
+
+      if (embedForm) {
+        embedForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const body = {
+            channelId: channelSelect.value,
+            embed: {
+              title: embedTitle.value,
+              description: `${emojiSelect.value} ${embedDescription.value}`.trim(),
+              color: parseInt(embedColor.value.replace('#', ''), 16)
+            }
+          };
+          const res = await fetch('/embed', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+          });
+          alert(await res.text());
+          embedForm.reset();
+        });
+      }
     });
   </script>
 </head>
@@ -111,6 +137,33 @@
           <input type="text" id="message" required>
         </div>
         <button class="btn" style="margin-top:1rem;">Send</button>
+      </form>
+    </div>
+    <div class="card tilt" style="margin-top:2rem;">
+      <h2>Rich Embed</h2>
+      <form id="embedForm">
+        <div class="form-group">
+          <label>Title</label>
+          <input type="text" id="embedTitle" maxlength="256" required>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="embedDescription" required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Color</label>
+          <input type="color" id="embedColor" value="#5865F2">
+        </div>
+        <div class="form-group">
+          <label>Emoji Prefix</label>
+          <select id="emoji">
+            <option value="">None</option>
+            <option value="😀">😀 Smile</option>
+            <option value="🚀">🚀 Rocket</option>
+            <option value="🔥">🔥 Fire</option>
+          </select>
+        </div>
+        <button class="btn" style="margin-top:1rem;">Send Embed</button>
       </form>
     </div>
   </main>
