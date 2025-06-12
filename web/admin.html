@@ -21,6 +21,14 @@
       const form = document.getElementById('msgForm');
       const params = new URLSearchParams(window.location.search);
       const guildId = params.get('guildId');
+      const commandsLink = document.getElementById('commandsLink');
+      if (commandsLink) {
+        if (guildId) {
+          commandsLink.href = `commands.html?guildId=${guildId}`;
+        } else {
+          commandsLink.style.display = 'none';
+        }
+      }
 
       const loadChannels = async (id) => {
         channelSelect.innerHTML = '';
@@ -82,7 +90,7 @@
     </div>
     <nav>
       <a href="servers.html" class="link">Servers</a>
-      <a href="commands.html" class="link">Commands</a>
+      <a href="commands.html" id="commandsLink" class="link">Commands</a>
       <a href="/logout" class="link">Logout</a>
     </nav>
   </div>
