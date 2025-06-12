@@ -36,10 +36,6 @@
       const embedImage = document.getElementById('embedImage');
       const embedThumbnail = document.getElementById('embedThumbnail');
       const embedTimestamp = document.getElementById('embedTimestamp');
-      const mentionUserSelect = document.getElementById("mentionUser");
-      const mentionChannelSelect = document.getElementById("mentionChannel");
-      const messageInput = document.getElementById("message");
-      const customEmojiPicker = document.getElementById("customEmojiPicker");
       const embedFields = document.getElementById('embedFields');
       const descPreview = document.getElementById('descPreview');
       const params = new URLSearchParams(window.location.search);
@@ -69,44 +65,6 @@
               opt2.textContent = c.name;
               embedChannelSelect.appendChild(opt2);
             }
-          });
-        await loadMembers(id);
-        await loadEmojis(id);
-      };
-      const loadMembers = async (id) => {
-        if (!mentionUserSelect) return;
-        mentionUserSelect.innerHTML = "<option value="">--Select user--</option>";
-        const members = await fetchJSON(`/members/${id}`);
-        if (members)
-          members.forEach(m => {
-            const opt = document.createElement("option");
-            opt.value = m.id;
-            opt.textContent = m.name;
-            mentionUserSelect.appendChild(opt);
-          });
-      };
-
-      const loadEmojis = async (id) => {
-        if (!customEmojiPicker) return;
-        customEmojiPicker.innerHTML = "";
-        const emojis = await fetchJSON(`/emojis/${id}`);
-        if (emojis)
-          emojis.forEach(e => {
-            const img = document.createElement("img");
-            img.src = e.url;
-            img.alt = e.name;
-            img.title = `:${e.name}:`;
-            img.addEventListener("click", async () => {
-              const markup = e.animated ? `<a:${e.name}:${e.id}>` : `<:${e.name}:${e.id}>`;
-              emojiInput.value = markup;
-              try {
-                await navigator.clipboard.writeText(markup);
-              } catch (_) {}
-              emojiPicker.style.display = "none";
-              customEmojiPicker.style.display = "none";
-              updatePreview();
-            });
-            customEmojiPicker.appendChild(img);
           });
       };
 
@@ -147,7 +105,6 @@
 
       emojiInput.addEventListener('click', () => {
         emojiPicker.style.display = 'block';
-        if (customEmojiPicker) customEmojiPicker.style.display = 'flex';
       });
 
       emojiPicker.addEventListener('emoji-click', e => {
@@ -157,13 +114,8 @@
       });
 
       document.addEventListener('click', e => {
-        if (
-          !emojiPicker.contains(e.target) &&
-          !customEmojiPicker.contains(e.target) &&
-          e.target !== emojiInput
-        ) {
+        if (!emojiPicker.contains(e.target) && e.target !== emojiInput) {
           emojiPicker.style.display = 'none';
-          if (customEmojiPicker) customEmojiPicker.style.display = 'none';
         }
       });
 
@@ -250,22 +202,6 @@
       ].forEach(el => el && el.addEventListener('input', updatePreview));
 
       updatePreview();
-
-      if (mentionUserSelect)
-        mentionUserSelect.addEventListener('change', () => {
-          if (mentionUserSelect.value) {
-            messageInput.value += ` <@${mentionUserSelect.value}>`;
-            mentionUserSelect.selectedIndex = 0;
-          }
-        });
-
-      if (mentionChannelSelect)
-        mentionChannelSelect.addEventListener('change', () => {
-          if (mentionChannelSelect.value) {
-            messageInput.value += ` <#${mentionChannelSelect.value}>`;
-            mentionChannelSelect.selectedIndex = 0;
-          }
-        });
 
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -361,18 +297,6 @@
           <label>Message</label>
           <input type="text" id="message" required>
         </div>
-        <div class="form-group">
-          <label>Mention User</label>
-          <select id="mentionUser">
-            <option value="">--Select user--</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Mention Channel</label>
-          <select id="mentionChannel">
-            <option value="">--Select channel--</option>
-          </select>
-        </div>
         <button class="btn" style="margin-top:1rem;">Send</button>
       </form>
     </div>
@@ -448,7 +372,6 @@
           <div class="emoji-picker-wrapper">
             <input type="text" id="emojiInput" readonly placeholder="Click to pick">
             <emoji-picker id="emojiPicker"></emoji-picker>
-            <div id="customEmojiPicker" class="custom-emoji-picker"></div>
           </div>
         </div>
         <div id="embedPreview" class="embed-preview"></div>
