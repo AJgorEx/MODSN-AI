@@ -24,6 +24,15 @@
       const embedTitle = document.getElementById('embedTitle');
       const embedDescription = document.getElementById('embedDescription');
       const embedColor = document.getElementById('embedColor');
+      const embedUrl = document.getElementById('embedUrl');
+      const embedAuthorName = document.getElementById('embedAuthorName');
+      const embedAuthorIcon = document.getElementById('embedAuthorIcon');
+      const embedFooterText = document.getElementById('embedFooterText');
+      const embedFooterIcon = document.getElementById('embedFooterIcon');
+      const embedImage = document.getElementById('embedImage');
+      const embedThumbnail = document.getElementById('embedThumbnail');
+      const embedTimestamp = document.getElementById('embedTimestamp');
+      const embedFields = document.getElementById('embedFields');
       const params = new URLSearchParams(window.location.search);
       const guildId = params.get('guildId');
       const commandsLink = document.getElementById('commandsLink');
@@ -81,13 +90,34 @@
       if (embedForm) {
         embedForm.addEventListener('submit', async (e) => {
           e.preventDefault();
+          const embed = {
+            title: embedTitle.value,
+            description: `${emojiSelect.value} ${embedDescription.value}`.trim(),
+            color: parseInt(embedColor.value.replace('#', ''), 16)
+          };
+          if (embedUrl.value) embed.url = embedUrl.value;
+          if (embedTimestamp.checked) embed.timestamp = new Date().toISOString();
+          if (embedAuthorName.value || embedAuthorIcon.value) {
+            embed.author = {};
+            if (embedAuthorName.value) embed.author.name = embedAuthorName.value;
+            if (embedAuthorIcon.value) embed.author.icon_url = embedAuthorIcon.value;
+          }
+          if (embedFooterText.value || embedFooterIcon.value) {
+            embed.footer = {};
+            if (embedFooterText.value) embed.footer.text = embedFooterText.value;
+            if (embedFooterIcon.value) embed.footer.icon_url = embedFooterIcon.value;
+          }
+          if (embedImage.value) embed.image = { url: embedImage.value };
+          if (embedThumbnail.value) embed.thumbnail = { url: embedThumbnail.value };
+          if (embedFields.value.trim()) {
+            embed.fields = embedFields.value.trim().split('\n').map(line => {
+              const [name, value, inline] = line.split('|');
+              return { name: name || '', value: value || '', inline: inline === 'inline' };
+            });
+          }
           const body = {
             channelId: channelSelect.value,
-            embed: {
-              title: embedTitle.value,
-              description: `${emojiSelect.value} ${embedDescription.value}`.trim(),
-              color: parseInt(embedColor.value.replace('#', ''), 16)
-            }
+            embed
           };
           const res = await fetch('/embed', {
             method: 'POST',
@@ -153,6 +183,41 @@
         <div class="form-group">
           <label>Color</label>
           <input type="color" id="embedColor" value="#5865F2">
+        </div>
+        <div class="form-group">
+          <label>URL</label>
+          <input type="url" id="embedUrl">
+        </div>
+        <div class="form-group">
+          <label>Author Name</label>
+          <input type="text" id="embedAuthorName" maxlength="256">
+        </div>
+        <div class="form-group">
+          <label>Author Icon URL</label>
+          <input type="url" id="embedAuthorIcon">
+        </div>
+        <div class="form-group">
+          <label>Footer Text</label>
+          <input type="text" id="embedFooterText" maxlength="2048">
+        </div>
+        <div class="form-group">
+          <label>Footer Icon URL</label>
+          <input type="url" id="embedFooterIcon">
+        </div>
+        <div class="form-group">
+          <label>Image URL</label>
+          <input type="url" id="embedImage">
+        </div>
+        <div class="form-group">
+          <label>Thumbnail URL</label>
+          <input type="url" id="embedThumbnail">
+        </div>
+        <div class="form-group">
+          <label><input type="checkbox" id="embedTimestamp"> Add Timestamp</label>
+        </div>
+        <div class="form-group">
+          <label>Fields (name|value|inline per line)</label>
+          <textarea id="embedFields"></textarea>
         </div>
         <div class="form-group">
           <label>Emoji Prefix</label>

@@ -135,6 +135,32 @@ module.exports = function startWebServer(client) {
     next();
   }
 
+  async function fetchUserGuilds(req) {
+    if (!req.session.guilds) {
+      const guildRes = await fetch('https://discord.com/api/users/@me/guilds', {
+        headers: { Authorization: `Bearer ${req.session.accessToken}` }
+      });
+      if (!guildRes.ok) throw new Error('Failed to fetch guilds');
+      const guilds = await guildRes.json();
+      const botGuilds = client.guilds.cache;
+      req.session.guilds = guilds.filter(g => botGuilds.has(g.id));
+    }
+    return req.session.guilds;
+  }
+
+  async function verifyGuildAccess(req, res, next) {
+    try {
+      const guilds = await fetchUserGuilds(req);
+      if (!guilds.find(g => g.id === req.params.guildId)) {
+        return res.status(403).send('Forbidden');
+      }
+      next();
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Failed to verify guild');
+    }
+  }
+
   app.get('/me', requireAuth, async (req, res) => {
     try {
       if (!req.session.user) {
@@ -155,7 +181,7 @@ module.exports = function startWebServer(client) {
     res.json({ botGuilds: client.guilds.cache.size });
   });
 
-  app.get('/command-status/:guildId', requireAuth, (req, res) => {
+  app.get('/command-status/:guildId', requireAuth, verifyGuildAccess, (req, res) => {
     const guildId = req.params.guildId;
     const result = {};
     client.commands.forEach((_, name) => {
@@ -164,7 +190,7 @@ module.exports = function startWebServer(client) {
     res.json(result);
   });
 
-  app.post('/command-status/:guildId', requireAuth, (req, res) => {
+  app.post('/command-status/:guildId', requireAuth, verifyGuildAccess, (req, res) => {
     const guildId = req.params.guildId;
     const { command, enabled } = req.body;
     if (!client.commands.has(command)) {
@@ -178,20 +204,15 @@ module.exports = function startWebServer(client) {
 
   app.get('/guilds', requireAuth, async (req, res) => {
     try {
-      const guildRes = await fetch('https://discord.com/api/users/@me/guilds', {
-        headers: { Authorization: `Bearer ${req.session.accessToken}` }
-      });
-      const guilds = await guildRes.json();
-      const botGuilds = client.guilds.cache;
-      const filtered = guilds.filter(g => botGuilds.has(g.id));
-      res.json(filtered);
+      const guilds = await fetchUserGuilds(req);
+      res.json(guilds);
     } catch (err) {
       console.error(err);
       res.status(500).send('Failed to fetch guilds');
     }
   });
 
-  app.get('/channels/:guildId', requireAuth, async (req, res) => {
+  app.get('/channels/:guildId', requireAuth, verifyGuildAccess, async (req, res) => {
     const guild = client.guilds.cache.get(req.params.guildId);
     if (!guild) return res.status(404).send('Guild not found');
     try {
@@ -209,6 +230,15 @@ module.exports = function startWebServer(client) {
     const { channelId, message } = req.body;
     const channel = client.channels.cache.get(channelId);
     if (!channel) return res.status(400).send('Channel not found');
+    try {
+      const guilds = await fetchUserGuilds(req);
+      if (!guilds.find(g => g.id === channel.guildId)) {
+        return res.status(403).send('Forbidden');
+      }
+    } catch (err) {
+      console.error(err);
+      return res.status(500).send('Failed to verify guild');
+    }
     if (typeof message !== 'string' || message.length === 0 || message.length > 2000) {
       return res.status(400).send('Invalid message');
     }
@@ -225,6 +255,15 @@ module.exports = function startWebServer(client) {
     const { channelId, embed } = req.body;
     const channel = client.channels.cache.get(channelId);
     if (!channel) return res.status(400).send('Channel not found');
+    try {
+      const guilds = await fetchUserGuilds(req);
+      if (!guilds.find(g => g.id === channel.guildId)) {
+        return res.status(403).send('Forbidden');
+      }
+    } catch (err) {
+      console.error(err);
+      return res.status(500).send('Failed to verify guild');
+    }
     if (!embed || typeof embed !== 'object') {
       return res.status(400).send('Invalid embed');
     }
