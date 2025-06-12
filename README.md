@@ -34,6 +34,10 @@ Jeżeli bot nie jest jeszcze na Twoim serwerze, skorzystaj z adresu `http://loca
 
 W panelu administracyjnym znajdziesz sekcję **Rich Embed**, która pozwala zbudować zaawansowaną wiadomość z tytułem, opisem, kolorem oraz emoji. Teraz dostępny jest picker emoji, przyciski do formatowania tekstu z podglądem oraz podgląd gotowego embed przed wysłaniem. Gotowy embed możesz wysłać na wybrany kanał serwera.
 
+## Roles overview
+
+Now the panel includes a **Roles** page where you can view server roles. Access it from the admin page once a guild is selected.
+
 ## Testy
 
 W projekcie nie ma zdefiniowanych testów, ale polecenie `npm test` jest wymagane przed wysłaniem zmian.

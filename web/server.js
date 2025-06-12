@@ -293,6 +293,34 @@ module.exports = function startWebServer(client) {
     }
   });
 
+  app.get('/roles/:guildId', requireAuth, verifyGuildAccess, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.guildId);
+    if (!guild) return res.status(404).send('Guild not found');
+    try {
+      const roles = (await guild.roles.fetch()).map(r => ({ id: r.id, name: r.name }));
+      res.json(roles);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Failed to fetch roles');
+    }
+  });
+
+  app.get('/members/:guildId', requireAuth, verifyGuildAccess, async (req, res) => {
+    const guild = client.guilds.cache.get(req.params.guildId);
+    if (!guild) return res.status(404).send('Guild not found');
+    try {
+      const members = (await guild.members.fetch({ limit: 100 })).map(m => ({
+        id: m.id,
+        username: m.user.username,
+        avatar: m.user.displayAvatarURL({ size: 64 })
+      }));
+      res.json(members);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Failed to fetch members');
+    }
+  });
+
   app.listen(PORT, () =>
     console.log(`\uD83D\uDD0C Web management listening on port ${PORT}`)
   );
