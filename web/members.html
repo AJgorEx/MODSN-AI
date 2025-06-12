@@ -28,7 +28,20 @@
   <main class="main">
     <div class="card tilt">
       <h1 id="server-name">Members</h1>
+      <div class="form-group" style="margin-bottom:1rem;">
+        <input id="search" class="input" type="text" placeholder="Search...">
+        <select id="sort" class="input" style="margin-left:0.5rem;">
+          <option value="asc">A-Z</option>
+          <option value="desc">Z-A</option>
+        </select>
+        <button id="exportBtn" class="btn btn-sm" type="button" style="margin-left:0.5rem;">Export CSV</button>
+      </div>
       <ul id="members"></ul>
+      <div class="form-group" style="margin-top:1rem;">
+        <button id="prevPage" class="btn btn-sm" type="button">Prev</button>
+        <span id="pageInfo" style="margin:0 0.5rem;">1/1</span>
+        <button id="nextPage" class="btn btn-sm" type="button">Next</button>
+      </div>
     </div>
   </main>
   <div id="notifications" class="notifications"></div>
