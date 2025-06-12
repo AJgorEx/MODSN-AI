@@ -23,6 +23,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         const isAdmin = g.owner || (BigInt(g.permissions) & 0x8n) === 0x8n;
         link.href = isAdmin ? `admin.html?guildId=${g.id}` : 'user.html';
         li.appendChild(link);
+        if (isAdmin) {
+          const info = document.createElement('a');
+          info.className = 'btn btn-sm';
+          info.textContent = 'Info';
+          info.href = `server-info.html?guildId=${g.id}`;
+          li.appendChild(info);
+        }
         list.appendChild(li);
       });
   }
