@@ -42,6 +42,21 @@ Now the panel includes a **Roles** page where you can view server roles. Access 
 
 Bot includes an in-chat economy. Use `/daily` and `/work` to earn coins, `/deposit` and `/withdraw` to manage your bank balance and `/gamble` to risk your coins for a chance to double them.
 
+## Advanced commands
+
+Bot oferuje także szereg bardziej rozbudowanych komend:
+
+- `/weather <miasto>` - aktualna pogoda.
+- `/translate <tekst> <lang>` - tłumaczenie na wybrany język.
+- `/remind <minuty> <tekst>` - przypomnienie po czasie.
+- `/quote` - losowy cytat.
+- `/stock <symbol>` - cena akcji.
+- `/meme` - losowy mem z internetu.
+- `/crypto <id>` - kurs kryptowaluty.
+- `/define <słowo>` - definicja słowa po angielsku.
+- `/dog` - zdjęcie psa.
+- `/time` - aktualny czas UTC.
+
 ## Testy
 
 W projekcie nie ma zdefiniowanych testów, ale polecenie `npm test` jest wymagane przed wysłaniem zmian.

@@ -23,6 +23,16 @@
     "addrole": true,
     "removerole": true,
     "membercount": true
+    ,"weather": true
+    ,"translate": true
+    ,"remind": true
+    ,"quote": true
+    ,"stock": true
+    ,"meme": true
+    ,"crypto": true
+    ,"define": true
+    ,"dog": true
+    ,"time": true
   },
   "guilds": {}
 }
