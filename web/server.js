@@ -22,6 +22,7 @@ module.exports = function startWebServer(client) {
   app.use(cookieParser(process.env.SESSION_SECRET));
   const csp = helmet.contentSecurityPolicy.getDefaultDirectives();
   csp["script-src"].push("'unsafe-inline'");
+  csp["img-src"].push('https://cdn.discordapp.com');
   app.use(
     helmet({
       contentSecurityPolicy: { directives: csp }
