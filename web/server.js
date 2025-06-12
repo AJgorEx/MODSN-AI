@@ -20,7 +20,13 @@ module.exports = function startWebServer(client) {
 
   // Cookie parser MUST come before the session middleware
   app.use(cookieParser(process.env.SESSION_SECRET));
-  app.use(helmet());
+  const csp = helmet.contentSecurityPolicy.getDefaultDirectives();
+  csp["script-src"].push("'unsafe-inline'");
+  app.use(
+    helmet({
+      contentSecurityPolicy: { directives: csp }
+    })
+  );
 
   app.use(
     session({
