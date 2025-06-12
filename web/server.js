@@ -36,12 +36,25 @@ module.exports = function startWebServer(client) {
       cookie: {
         sameSite: 'lax',
         httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
         secure: process.env.NODE_ENV === 'production'
       }
     })
   );
-  app.use(express.static(path.join(__dirname)));
+  const staticPath = path.join(__dirname);
+
+  function sendProtected(file) {
+    return (req, res) => {
+      res.set('Cache-Control', 'no-store');
+      res.sendFile(path.join(staticPath, file));
+    };
+  }
+
+  app.get('/servers.html', requireAuth, sendProtected('servers.html'));
+  app.get('/admin.html', requireAuth, sendProtected('admin.html'));
+  app.get('/user.html', requireAuth, sendProtected('user.html'));
+
+  app.use(express.static(staticPath));
 
   app.get('/invite', (req, res) => {
     const params = new URLSearchParams({

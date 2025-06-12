@@ -1,21 +1,5 @@
-async function fetchJSON(url) {
-  const r = await fetch(url, { credentials: 'include' });
-  if (!r.ok) {
-    console.error('Failed to fetch', url, r.status);
-    return null;
-  }
-  return r.json();
-}
-
 document.addEventListener('DOMContentLoaded', async () => {
-  const user = await fetchJSON('/me');
-  if (user) {
-    document.getElementById('username').textContent = user.username;
-    const avatarUrl = user.avatar
-      ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`
-      : `https://cdn.discordapp.com/embed/avatars/${(parseInt(user.discriminator) || 0) % 5}.png`;
-    document.getElementById('avatar').src = avatarUrl;
-  }
+  const user = await loadUserInfo();
 
   const stats = await fetchJSON('/stats');
   if (stats)
