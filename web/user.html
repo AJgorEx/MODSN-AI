@@ -3,27 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <title>User Zone</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const colorInput = document.getElementById('color');
-      const saved = localStorage.getItem('accent') || '#14b8a6';
-      document.documentElement.style.setProperty('--accent', saved);
-      colorInput.value = saved;
-      colorInput.addEventListener('input', () => {
-        document.documentElement.style.setProperty('--accent', colorInput.value);
-        localStorage.setItem('accent', colorInput.value);
-      });
+    async function fetchJSON(url){const r=await fetch(url);return r.ok? r.json():[];}
+    document.addEventListener('DOMContentLoaded', async () => {
+      const user=await fetchJSON('/me');
+      document.getElementById('username').textContent = user.username;
+      document.getElementById('avatar').src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`;
     });
   </script>
 </head>
-<body style="--accent:#14b8a6;">
+<body>
   <div class="glass card">
     <h1>User Zone</h1>
-    <div class="form-group">
-      <label>Accent color</label>
-      <input type="color" id="color">
-    </div>
+    <img id="avatar" class="avatar" src="" alt="avatar">
+    <p id="username"></p>
     <a href="/logout" class="link">Logout</a>
   </div>
 </body>

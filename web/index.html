@@ -3,29 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <title>MODSN.AI Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const colorInput = document.getElementById('color');
-      const root = document.documentElement;
-      const saved = localStorage.getItem('accent') || '#14b8a6';
-      root.style.setProperty('--accent', saved);
-      colorInput.value = saved;
-      colorInput.addEventListener('input', () => {
-        root.style.setProperty('--accent', colorInput.value);
-        localStorage.setItem('accent', colorInput.value);
-      });
-    });
-  </script>
 </head>
-<body style="--accent:#14b8a6;">
-  <div class="glass card">
-    <h1>MODSN.AI Panel</h1>
-    <a href="/login" class="btn">Login with Discord</a>
-    <div class="form-group">
-      <label>Accent color</label>
-      <input type="color" id="color">
+  <body>
+    <div class="glass card">
+      <h1>MODSN.AI Panel</h1>
+      <a href="/login" class="btn">Login with Discord</a>
     </div>
-  </div>
 </body>
 </html>

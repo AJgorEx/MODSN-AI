@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Admin Zone</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <script>
     async function fetchJSON(url) {
@@ -10,12 +11,18 @@
       return r.ok ? r.json() : [];
     }
     document.addEventListener('DOMContentLoaded', async () => {
-      const saved = localStorage.getItem('accent') || '#14b8a6';
-      document.documentElement.style.setProperty('--accent', saved);
+      const user = await fetchJSON('/me');
+      document.getElementById('username').textContent = user.username;
+      document.getElementById('avatar').src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`;
+
+      const stats = await fetchJSON('/stats');
+      document.getElementById('stats').textContent = `Bot on ${stats.botGuilds} servers`;
 
       const guildSelect = document.getElementById('guild');
       const channelSelect = document.getElementById('channel');
       const form = document.getElementById('msgForm');
+      const params = new URLSearchParams(window.location.search);
+      const pre = params.get('guildId');
       const guilds = await fetchJSON('/guilds');
       guilds.forEach(g => {
         const opt = document.createElement('option');
@@ -23,6 +30,7 @@
         opt.textContent = g.name;
         guildSelect.appendChild(opt);
       });
+      if (pre) guildSelect.value = pre;
       guildSelect.addEventListener('change', async () => {
         channelSelect.innerHTML = '';
         const channels = await fetchJSON(`/channels/${guildSelect.value}`);
@@ -47,29 +55,42 @@
           body: JSON.stringify(body)
         });
         alert(await res.text());
+        form.reset();
       });
     });
   </script>
 </head>
-<body style="--accent:#14b8a6;">
-  <div class="glass card">
-    <h1>Admin Zone</h1>
-    <form id="msgForm">
-      <div class="form-group">
-        <label>Guild</label>
-        <select id="guild"></select>
-      </div>
-      <div class="form-group">
-        <label>Channel</label>
-        <select id="channel"></select>
-      </div>
-      <div class="form-group">
-        <label>Message</label>
-        <input type="text" id="message" required>
-      </div>
-      <button class="btn" style="margin-top:1rem;">Send</button>
-    </form>
-    <a href="/logout" class="link">Logout</a>
+<body>
+  <div class="sidebar">
+    <div class="user-info">
+      <img id="avatar" class="avatar" src="" alt="avatar">
+      <div id="username"></div>
+      <p id="stats"></p>
+    </div>
+    <nav>
+      <a href="servers.html" class="link">Servers</a>
+      <a href="/logout" class="link">Logout</a>
+    </nav>
   </div>
+  <main class="main">
+    <div class="glass card">
+      <h1>Admin Zone</h1>
+      <form id="msgForm">
+        <div class="form-group">
+          <label>Guild</label>
+          <select id="guild"></select>
+        </div>
+        <div class="form-group">
+          <label>Channel</label>
+          <select id="channel"></select>
+        </div>
+        <div class="form-group">
+          <label>Message</label>
+          <input type="text" id="message" required>
+        </div>
+        <button class="btn" style="margin-top:1rem;">Send</button>
+      </form>
+    </div>
+  </main>
 </body>
 </html>
