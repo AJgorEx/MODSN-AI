@@ -28,6 +28,7 @@ node index.js
 ```
 
 Aplikacja wystartuje na porcie `3000`. Otwórz `http://localhost:3000` w przeglądarce i zaloguj się przez Discord.
+Jeżeli bot nie jest jeszcze na Twoim serwerze, skorzystaj z adresu `http://localhost:3000/invite` aby go dodać.
 
 ## Testy
 

@@ -29,11 +29,22 @@ module.exports = function startWebServer(client) {
       saveUninitialized: false,
       cookie: {
         sameSite: 'lax',
-        secure: false
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000,
+        secure: process.env.NODE_ENV === 'production'
       }
     })
   );
   app.use(express.static(path.join(__dirname)));
+
+  app.get('/invite', (req, res) => {
+    const params = new URLSearchParams({
+      client_id: CLIENT_ID,
+      permissions: '8',
+      scope: 'bot'
+    });
+    res.redirect(`https://discord.com/oauth2/authorize?${params.toString()}`);
+  });
 
   app.get('/login', (req, res) => {
     const state = crypto.randomBytes(16).toString('hex');
