@@ -11,15 +11,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (guilds) {
     guilds.forEach(g => {
       const li = document.createElement('li');
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.textContent = g.name;
-      btn.className = 'link';
-      btn.onclick = () => (location.href = `admin.html?guildId=${g.id}`);
-      li.appendChild(btn);
+      const link = document.createElement('a');
+      link.textContent = g.name;
+      link.href = `admin.html?guildId=${g.id}`;
+      li.appendChild(link);
       list.appendChild(li);
     });
-    invite.innerHTML = "<button type='button' class='btn' onclick=\"location.href='/invite'\">Add Bot to Server</button>";
-    invite.innerHTML = "<button class='btn' onclick=\"location.href='/invite'\">Add Bot to Server</button>";
+    invite.innerHTML = '<a class="btn" href="/invite">Add Bot to Server</a>';
   }
 });
