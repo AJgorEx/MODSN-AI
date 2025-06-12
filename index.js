@@ -49,7 +49,15 @@ client.setEmbedColor = function (guildId, color) {
   guildSettings.set(guildId, { color });
 };
 client.createEmbed = function (guildId, data = {}) {
-  return { color: this.getEmbedColor(guildId), ...data };
+  const defaults = {
+    color: this.getEmbedColor(guildId),
+    timestamp: new Date(),
+    footer: {
+      text: this.user ? this.user.username : '',
+      icon_url: this.user ? this.user.displayAvatarURL() : null
+    }
+  };
+  return { ...defaults, ...data };
 };
 
 const commandsPath = path.join(__dirname, 'commands');
