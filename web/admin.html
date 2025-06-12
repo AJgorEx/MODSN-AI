@@ -6,7 +6,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <script>
-    async function fetchJSON(url) { const r = await fetch(url); return r.ok ? r.json() : {}; }
+    async function fetchJSON(url) {
+      const r = await fetch(url, { credentials: 'include' });
+      return r.ok ? r.json() : {};
+    }
     document.addEventListener('DOMContentLoaded', async () => {
       const user = await fetchJSON('/me');
       document.getElementById('username').textContent = user.username;
@@ -61,6 +64,12 @@
   </script>
 </head>
 <body>
+  <header class="topbar">
+    <h2>MODSN.AI</h2>
+    <nav>
+      <a href="servers.html" class="link">Servers</a>
+    </nav>
+  </header>
   <div class="sidebar">
     <div class="user-info">
       <img id="avatar" class="avatar" src="" alt="avatar">
@@ -92,6 +101,7 @@
       </form>
     </div>
   </main>
+  <footer class="footer">Panel MODSN.AI &copy; 2024</footer>
   <script src="script.js"></script>
 </body>
 </html>
